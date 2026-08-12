@@ -1,0 +1,220 @@
+---
+import { fmt } from "../utils";
+
+interface Props {
+  open?: boolean;
+}
+
+const { open = false } = Astro.props;
+---
+
+<div id="cart-drawer-overlay" class="fixed inset-0 z-40 bg-black/20 transition-opacity duration-300 opacity-0 pointer-events-none" data-cart-overlay></div>
+
+<div id="cart-drawer" class="fixed right-0 top-0 h-full w-full max-w-[420px] bg-[#FFFDFC] z-50 shadow-2xl flex flex-col transition-transform duration-300 ease-out translate-x-full" data-cart-drawer>
+  {/* Header */}
+  <div class="flex items-center justify-between px-6 py-4 border-b border-[#E6DDD6]">
+    <div>
+      <h2 style="font-family: 'DM Serif Display', Georgia, serif;" class="text-[#332C29] text-lg font-semibold">
+        Tu carrito
+      </h2>
+      <p class="text-xs text-[#8C817B]">
+        <span id="cart-total-qty">0</span> <span id="cart-qty-label">productos</span>
+      </p>
+    </div>
+    <button
+      id="cart-close-btn"
+      class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#F9F5EF] text-[#665C57] transition-colors"
+      aria-label="Close cart"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+  </div>
+
+  {/* Body */}
+  <div class="flex-1 overflow-y-auto py-4 px-6">
+    <div id="cart-empty-state" class="flex flex-col items-center justify-center h-full gap-3 py-20 text-center">
+      <div class="w-14 h-14 rounded-full bg-[#F9F5EF] flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8C817B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <path d="M16 10a4 4 0 0 1-8 0"></path>
+        </svg>
+      </div>
+      <p class="text-[#332C29] font-medium text-sm">
+        Tu carrito está vacío
+      </p>
+      <p class="text-sm text-[#8C817B] max-w-[200px]">
+        Agregá tus productos favoritos para comenzar
+      </p>
+      <a
+        href="/category"
+        id="cart-empty-cta"
+        class="mt-2 px-5 py-2.5 bg-[#8E6F62] text-[#FFFDFC] rounded-full text-sm font-medium hover:bg-[#6F554A] transition-colors duration-200"
+      >
+        Ver productos
+      </a>
+    </div>
+
+    <div id="cart-items" class="space-y-4 hidden">
+      {/* Cart items will be rendered here via JavaScript */}
+    </div>
+  </div>
+
+  {/* Footer */}
+  <div id="cart-footer" class="border-t border-[#E6DDD6] px-6 py-5 hidden">
+    <div class="flex justify-between items-center mb-1">
+      <span class="text-sm text-[#665C57]">Subtotal</span>
+      <span class="font-semibold text-[#332C29]" id="cart-subtotal">$0</span>
+    </div>
+    <p class="text-xs text-[#8C817B] mb-4">
+      Envío gratuito en compras mayores a $3.000
+    </p>
+    <a
+      href="/checkout"
+      id="cart-checkout-btn"
+      class="w-full py-3.5 bg-[#8E6F62] text-[#FFFDFC] rounded-full font-medium hover:bg-[#6F554A] transition-colors duration-200 flex items-center justify-center gap-2 text-sm"
+    >
+      Finalizar compra
+      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+        <polyline points="12 5 19 12 12 19"></polyline>
+      </svg>
+    </a>
+    <a
+      href="/cart"
+      id="cart-view-btn"
+      class="w-full mt-2 py-2.5 text-[#665C57] text-sm text-center hover:text-[#332C29] transition-colors block"
+    >
+      Ver carrito completo
+    </a>
+  </div>
+</div>
+
+<script define:vars={{ fmt }}>
+  // Cart state management
+  let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+  
+  const overlay = document.getElementById('cart-drawer-overlay');
+  const drawer = document.getElementById('cart-drawer');
+  const closeBtn = document.getElementById('cart-close-btn');
+  const emptyState = document.getElementById('cart-empty-state');
+  const itemsContainer = document.getElementById('cart-items');
+  const footer = document.getElementById('cart-footer');
+  const totalQtyEl = document.getElementById('cart-total-qty');
+  const qtyLabelEl = document.getElementById('cart-qty-label');
+  const subtotalEl = document.getElementById('cart-subtotal');
+  
+  const openDrawer = () => {
+    overlay.classList.remove('opacity-0', 'pointer-events-none');
+    drawer.classList.remove('translate-x-full');
+    document.body.style.overflow = 'hidden';
+  };
+  
+  const closeDrawer = () => {
+    overlay.classList.add('opacity-0', 'pointer-events-none');
+    drawer.classList.add('translate-x-full');
+    document.body.style.overflow = '';
+  };
+  
+  const renderCart = () => {
+    const totalQty = cart.reduce((s, i) => s + i.quantity, 0);
+    const subtotal = cart.reduce((s, i) => s + i.product.price * i.quantity, 0);
+    
+    totalQtyEl.textContent = totalQty;
+    qtyLabelEl.textContent = totalQty === 1 ? 'producto' : 'productos';
+    subtotalEl.textContent = fmt(subtotal);
+    
+    if (cart.length === 0) {
+      emptyState.classList.remove('hidden');
+      itemsContainer.classList.add('hidden');
+      footer.classList.add('hidden');
+    } else {
+      emptyState.classList.add('hidden');
+      itemsContainer.classList.remove('hidden');
+      footer.classList.remove('hidden');
+      
+      itemsContainer.innerHTML = cart.map(({ product, quantity }) => `
+        <div class="flex gap-3.5 pb-4 border-b border-[#E6DDD6] last:border-0" data-item-id="${product.id}">
+          <div class="w-[72px] h-[88px] rounded-[10px] overflow-hidden bg-[#F9F5EF] flex-shrink-0">
+            <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover" />
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-[#332C29] leading-tight mb-0.5 truncate">${product.name}</p>
+            <p class="text-xs text-[#8C817B] mb-3">${fmt(product.price)}</p>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center border border-[#E6DDD6] rounded-full">
+                <button class="cart-qty-minus w-7 h-7 flex items-center justify-center text-[#665C57] hover:text-[#332C29] transition-colors" data-id="${product.id}" data-qty="${quantity}">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                </button>
+                <span class="w-7 text-center text-xs font-medium text-[#332C29]">${quantity}</span>
+                <button class="cart-qty-plus w-7 h-7 flex items-center justify-center text-[#665C57] hover:text-[#332C29] transition-colors" data-id="${product.id}" data-qty="${quantity}">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                </button>
+              </div>
+              <button class="cart-remove text-[#8C817B] hover:text-[#332C29] transition-colors" data-id="${product.id}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+      
+      // Add event listeners to new buttons
+      itemsContainer.querySelectorAll('.cart-qty-minus').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.id;
+          const currentQty = parseInt(btn.dataset.qty || '1');
+          if (currentQty === 1) {
+            cart = cart.filter(i => i.product.id !== id);
+          } else {
+            cart = cart.map(i => i.product.id === id ? { ...i, quantity: currentQty - 1 } : i);
+          }
+          localStorage.setItem('cart', JSON.stringify(cart));
+          renderCart();
+          window.dispatchEvent(new CustomEvent('cart-updated'));
+        });
+      });
+      
+      itemsContainer.querySelectorAll('.cart-qty-plus').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.id;
+          cart = cart.map(i => i.product.id === id ? { ...i, quantity: i.quantity + 1 } : i);
+          localStorage.setItem('cart', JSON.stringify(cart));
+          renderCart();
+          window.dispatchEvent(new CustomEvent('cart-updated'));
+        });
+      });
+      
+      itemsContainer.querySelectorAll('.cart-remove').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.id;
+          cart = cart.filter(i => i.product.id !== id);
+          localStorage.setItem('cart', JSON.stringify(cart));
+          renderCart();
+          window.dispatchEvent(new CustomEvent('cart-updated'));
+        });
+      });
+    }
+  };
+  
+  // Event listeners
+  closeBtn.addEventListener('click', closeDrawer);
+  overlay.addEventListener('click', closeDrawer);
+  
+  window.addEventListener('cart-open', openDrawer);
+  window.addEventListener('cart-updated', renderCart);
+  
+  // Initial render
+  renderCart();
+</script>

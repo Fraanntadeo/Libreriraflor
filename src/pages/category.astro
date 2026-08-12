@@ -1,0 +1,337 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { CATEGORIES, PRODUCTS, type Product } from "../data";
+import ProductCard from "../components/ProductCard.astro";
+import SLabel from "../components/ui/SLabel.astro";
+import Breadcrumb from "../components/ui/Breadcrumb.astro";
+
+const wishlist = JSON.parse(Astro.locals?.wishlist || '[]');
+---
+
+<Layout title="Tienda — Páginas" current="category">
+  <main class="max-w-[1200px] mx-auto px-6 py-8 md:py-12">
+    <div class="mb-6">
+      <Breadcrumb items={[
+        { label: "Inicio", href: "/" },
+        { label: "Tienda" }
+      ]} />
+    </div>
+
+    <div class="flex flex-col md:flex-row gap-8">
+      {/* Sidebar (desktop) */}
+      <aside class="hidden md:block w-52 flex-shrink-0">
+        <div class="sticky top-[76px]">
+          <h3 class="text-[10px] font-bold uppercase tracking-[0.18em] text-[#8C817B] mb-3">Categorías</h3>
+          <ul class="space-y-0.5">
+            {[{ id: "all", name: "Todas", count: PRODUCTS.length }, ...CATEGORIES].map((cat) => (
+              <li>
+                <button
+                  data-category={cat.id}
+                  class="category-filter w-full text-left px-3 py-2 rounded-[8px] text-sm transition-colors duration-150 flex justify-between items-center bg-[#E9DDD7] text-[#6F554A] font-semibold"
+                >
+                  <span>{cat.name}</span>
+                  <span class="text-[11px] text-[#8C817B]">{cat.count}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+
+          <div class="mt-8">
+            <h3 class="text-[10px] font-bold uppercase tracking-[0.18em] text-[#8C817B] mb-3">Disponibilidad</h3>
+            <label class="flex items-center gap-2.5 px-3 py-2 cursor-pointer">
+              <input type="checkbox" class="w-3.5 h-3.5 accent-[#8E6F62]" />
+              <span class="text-sm text-[#665C57]">Solo con stock</span>
+            </label>
+          </div>
+
+          <div class="mt-8">
+            <h3 class="text-[10px] font-bold uppercase tracking-[0.18em] text-[#8C817B] mb-3">Precio</h3>
+            {[["Hasta $1.000", "0-1000"], ["$1.000 – $2.000", "1000-2000"], ["Más de $2.000", "2000+"]].map(([label, range]) => (
+              <label key={range} class="flex items-center gap-2.5 px-3 py-2 cursor-pointer">
+                <input type="checkbox" class="w-3.5 h-3.5 accent-[#8E6F62]" />
+                <span class="text-sm text-[#665C57]">{label}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+      </aside>
+
+      {/* Products area */}
+      <div class="flex-1">
+        <div class="flex items-center justify-between mb-5">
+          <p class="text-sm text-[#8C817B]">
+            <span class="font-semibold text-[#332C29]" id="product-count">{PRODUCTS.length}</span> productos
+          </p>
+          <div class="flex items-center gap-3">
+            <button
+              id="mobile-filters-btn"
+              class="md:hidden flex items-center gap-1.5 px-3.5 py-2 border border-[#E6DDD6] rounded-full text-sm text-[#665C57] hover:border-[#8E6F62] transition-colors min-h-[44px]"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="4" y1="21" x2="4" y2="14"></line>
+                <line x1="4" y1="10" x2="4" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12" y2="3"></line>
+                <line x1="20" y1="21" x2="20" y2="16"></line>
+                <line x1="20" y1="12" x2="20" y2="3"></line>
+                <line x1="1" y1="14" x2="7" y2="14"></line>
+                <line x1="9" y1="8" x2="15" y2="8"></line>
+                <line x1="17" y1="16" x2="23" y2="16"></line>
+              </svg>
+              Filtros
+            </button>
+            <select
+              id="sort-select"
+              class="text-sm border border-[#E6DDD6] rounded-full px-4 py-2 text-[#665C57] bg-[#FFFDFC] focus:outline-none focus:border-[#8E6F62] cursor-pointer min-h-[44px]"
+            >
+              <option value="relevance">Relevancia</option>
+              <option value="price-asc">Precio: menor a mayor</option>
+              <option value="price-desc">Precio: mayor a menor</option>
+              <option value="rating">Mejor valorados</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Mobile pills */}
+        <div class="flex gap-2 overflow-x-auto pb-3 mb-4 md:hidden">
+          {[{ id: "all", name: "Todas" }, ...CATEGORIES].map((cat) => (
+            <button
+              key={cat.id}
+              data-category={cat.id}
+              class="mobile-category-filter flex-shrink-0 px-4 py-2 rounded-full text-xs font-semibold transition-colors min-h-[44px] bg-[#8E6F62] text-[#FFFDFC]"
+            >
+              {cat.name}
+            </button>
+          ))}
+        </div>
+
+        <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {PRODUCTS.map((p) => (
+            <ProductCard
+              key={p.id}
+              product={p}
+              inWishlist={wishlist.includes(p.id)}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+
+    {/* Mobile filters bottom sheet */}
+    <div id="mobile-filters" class="fixed inset-0 z-50 hidden">
+      <div id="mobile-filters-overlay" class="fixed inset-0 z-40 bg-black/20"></div>
+      <div class="fixed bottom-0 left-0 right-0 z-50 bg-[#FFFDFC] rounded-t-[24px] p-6 max-h-[80vh] overflow-y-auto shadow-2xl">
+        <div class="flex items-center justify-between mb-5">
+          <h3 style="font-family: 'DM Serif Display', Georgia, serif;" class="text-lg font-semibold text-[#332C29]">Filtros</h3>
+          <button id="mobile-filters-close" class="text-[#665C57]">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        <h4 class="text-[10px] font-bold uppercase tracking-[0.18em] text-[#8C817B] mb-3">Categorías</h4>
+        <div class="space-y-1 mb-6">
+          {[{ id: "all", name: "Todas" }, ...CATEGORIES].map((cat) => (
+            <button
+              key={cat.id}
+              data-category={cat.id}
+              class="mobile-category-filter-sheet w-full text-left px-3 py-3 rounded-[8px] text-sm transition-colors min-h-[44px] bg-[#E9DDD7] text-[#6F554A] font-semibold"
+            >
+              {cat.name}
+            </button>
+          ))}
+        </div>
+        <button id="mobile-filters-apply" class="w-full py-3.5 bg-[#8E6F62] text-[#FFFDFC] rounded-full font-semibold text-sm min-h-[44px]">
+          Aplicar filtros
+        </button>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<script define:vars={{ PRODUCTS, CATEGORIES }}>
+  let activeFilter = 'all';
+  let sortBy = 'relevance';
+  
+  const categoryFilters = document.querySelectorAll('.category-filter, .mobile-category-filter, .mobile-category-filter-sheet');
+  const sortSelect = document.getElementById('sort-select');
+  const productsGrid = document.getElementById('products-grid');
+  const productCount = document.getElementById('product-count');
+  const mobileFiltersBtn = document.getElementById('mobile-filters-btn');
+  const mobileFilters = document.getElementById('mobile-filters');
+  const mobileFiltersOverlay = document.getElementById('mobile-filters-overlay');
+  const mobileFiltersClose = document.getElementById('mobile-filters-close');
+  const mobileFiltersApply = document.getElementById('mobile-filters-apply');
+  
+  const filterAndSortProducts = () => {
+    let filtered = activeFilter === 'all' ? PRODUCTS : PRODUCTS.filter((p) => p.category === activeFilter);
+    
+    if (sortBy === 'price-asc') {
+      filtered = [...filtered].sort((a, b) => a.price - b.price);
+    } else if (sortBy === 'price-desc') {
+      filtered = [...filtered].sort((a, b) => b.price - a.price);
+    } else if (sortBy === 'rating') {
+      filtered = [...filtered].sort((a, b) => b.rating - a.rating);
+    }
+    
+    productCount.textContent = filtered.length;
+    
+    // Re-render products
+    productsGrid.innerHTML = filtered.map((p) => {
+      const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+      const inWishlist = wishlist.includes(p.id);
+      
+      return `
+        <article
+          class="group relative flex flex-col bg-[#FFFDFC] rounded-[16px] overflow-hidden border border-[#E6DDD6] cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(142,111,98,0.10)]"
+          data-product-id="${p.id}"
+        >
+          <div class="relative aspect-[4/5] bg-[#F9F5EF] overflow-hidden">
+            <a href="/product/${p.id}">
+              <img
+                src="${p.image}"
+                alt="${p.name}"
+                class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+              />
+            </a>
+            ${(p.badge || !p.inStock) && `
+              <div class="absolute top-3 left-3">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase ${!p.inStock ? 'bg-[#E6DDD6] text-[#8C817B]' : p.badge === 'new' ? 'bg-[#B8C6B2] text-[#253820]' : p.badge === 'sale' ? 'bg-[#E8C8C8] text-[#4a2828]' : 'bg-[#E9D8A6] text-[#3d3010]'}">
+                  ${!p.inStock ? 'Sin stock' : p.badge === 'new' ? 'Nuevo' : p.badge === 'sale' ? 'Oferta' : 'Más vendido'}
+                </span>
+              </div>
+            `}
+            <button
+              class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 flex items-center justify-center transition-all duration-200 shadow-sm wishlist-btn ${inWishlist ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}"
+              data-wishlist="${inWishlist}"
+              data-product-id="${p.id}"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="${inWishlist ? '#E8C8C8' : 'none'}" stroke="${inWishlist ? '#E8C8C8' : '#8C817B'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="wishlist-icon">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              </svg>
+            </button>
+          </div>
+          <div class="p-4 flex flex-col flex-1">
+            <p class="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#8C817B] mb-1">${p.category}</p>
+            <h3 class="text-sm font-semibold text-[#332C29] leading-snug mb-1.5">
+              <a href="/product/${p.id}" class="hover:text-[#8E6F62] transition-colors">${p.name}</a>
+            </h3>
+            <p class="text-xs text-[#8C817B] leading-relaxed mb-3 line-clamp-2">${p.description}</p>
+            <div class="mt-auto">
+              <div class="flex items-center gap-1.5 mb-3">
+                <div class="inline-flex gap-0.5">
+                  ${[1, 2, 3, 4, 5].map((n) => `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="${n <= Math.round(p.rating) ? '#E9D8A6' : '#E6DDD6'}" stroke="${n <= Math.round(p.rating) ? '#E9D8A6' : '#E6DDD6'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                  `).join('')}
+                </div>
+                <span class="text-[11px] text-[#8C817B]">(${p.reviews})</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="flex items-baseline gap-1.5">
+                  <span class="font-semibold text-[#332C29] text-sm">$${p.price.toLocaleString('es-AR')}</span>
+                  ${p.originalPrice ? `<span class="text-xs text-[#8C817B] line-through">$${p.originalPrice.toLocaleString('es-AR')}</span>` : ''}
+                </div>
+                <button class="px-3 py-1.5 rounded-full text-[11px] font-semibold transition-all duration-200 add-to-cart-btn ${p.inStock ? 'bg-[#8E6F62] text-[#FFFDFC] hover:bg-[#6F554A]' : 'bg-[#E6DDD6] text-[#8C817B] cursor-not-allowed'}" data-product-id="${p.id}" data-in-stock="${p.inStock}">
+                  ${p.inStock ? 'Agregar' : 'Sin stock'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </article>
+      `;
+    }).join('');
+    
+    // Re-attach event listeners to new elements
+    attachEventListeners();
+  };
+  
+  const attachEventListeners = () => {
+    // Wishlist buttons
+    document.querySelectorAll('.wishlist-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const productId = btn.dataset.productId;
+        const icon = btn.querySelector('.wishlist-icon');
+        const isInWishlist = btn.dataset.wishlist === 'true';
+        
+        const newState = !isInWishlist;
+        btn.dataset.wishlist = newState;
+        
+        icon.setAttribute('fill', newState ? '#E8C8C8' : 'none');
+        icon.setAttribute('stroke', newState ? '#E8C8C8' : '#8C817B');
+        
+        let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+        if (newState) {
+          wishlist.push(productId);
+        } else {
+          wishlist = wishlist.filter((id: string) => id !== productId);
+        }
+        localStorage.setItem('wishlist', JSON.stringify(wishlist));
+      });
+    });
+    
+    // Add to cart buttons
+    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const productId = btn.dataset.productId;
+        const inStock = btn.dataset.inStock === 'true';
+        
+        if (!inStock) return;
+        
+        window.dispatchEvent(new CustomEvent('add-to-cart', { detail: productId }));
+      });
+    });
+  };
+  
+  // Category filter event listeners
+  categoryFilters.forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeFilter = btn.dataset.category || 'all';
+      
+      // Update active state
+      categoryFilters.forEach(b => {
+        b.classList.remove('bg-[#E9DDD7]', 'text-[#6F554A]', 'font-semibold', 'bg-[#8E6F62]', 'text-[#FFFDFC]');
+        b.classList.add('text-[#665C57]', 'bg-[#F9F5EF]', 'border', 'border-[#E6DDD6]');
+      });
+      
+      if (btn.classList.contains('category-filter')) {
+        btn.classList.add('bg-[#E9DDD7]', 'text-[#6F554A]', 'font-semibold');
+        btn.classList.remove('text-[#665C57]', 'bg-[#F9F5EF]', 'border', 'border-[#E6DDD6]');
+      } else {
+        btn.classList.add('bg-[#8E6F62]', 'text-[#FFFDFC]');
+        btn.classList.remove('text-[#665C57]', 'bg-[#F9F5EF]', 'border', 'border-[#E6DDD6]');
+      }
+      
+      filterAndSortProducts();
+      
+      // Close mobile filters if open
+      mobileFilters.classList.add('hidden');
+    });
+  });
+  
+  // Sort select
+  sortSelect.addEventListener('change', (e) => {
+    sortBy = e.target.value;
+    filterAndSortProducts();
+  });
+  
+  // Mobile filters
+  mobileFiltersBtn.addEventListener('click', () => {
+    mobileFilters.classList.remove('hidden');
+  });
+  
+  const closeMobileFilters = () => {
+    mobileFilters.classList.add('hidden');
+  };
+  
+  mobileFiltersOverlay.addEventListener('click', closeMobileFilters);
+  mobileFiltersClose.addEventListener('click', closeMobileFilters);
+  mobileFiltersApply.addEventListener('click', closeMobileFilters);
+  
+  // Initial render
+  attachEventListeners();
+</script>

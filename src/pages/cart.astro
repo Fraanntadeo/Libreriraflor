@@ -1,0 +1,186 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { fmt } from "../utils";
+import QtySelector from "../components/ui/QtySelector.astro";
+import Breadcrumb from "../components/ui/Breadcrumb.astro";
+import { PRODUCTS } from "../data";
+---
+
+<Layout title="Tu carrito — Páginas" current="category">
+  <main class="max-w-[1200px] mx-auto px-6 py-8 md:py-12">
+    <h1 style="font-family: 'DM Serif Display', Georgia, serif;" class="text-3xl md:text-4xl text-[#332C29] mb-8">Tu carrito</h1>
+
+    <div id="cart-content">
+      <!-- Cart will be rendered here via JavaScript -->
+    </div>
+  </main>
+</Layout>
+
+<script define:vars={{ PRODUCTS, fmt }}>
+  const cartContent = document.getElementById('cart-content');
+  
+  const renderCart = () => {
+    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    
+    if (cart.length === 0) {
+      cartContent.innerHTML = `
+        <div class="text-center py-20">
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#E6DDD6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-4">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <path d="M16 10a4 4 0 0 1-8 0"></path>
+          </svg>
+          <h2 style="font-family: 'DM Serif Display', Georgia, serif;" class="text-xl text-[#332C29] mb-2">Tu carrito está vacío</h2>
+          <p class="text-[#8C817B] mb-6 text-sm">Explorá nuestra tienda y encontrá algo especial</p>
+          <a href="/category" class="px-6 py-3 bg-[#8E6F62] text-[#FFFDFC] rounded-full text-sm font-semibold hover:bg-[#6F554A] transition-colors min-h-[44px] inline-block">
+            Ir a la tienda
+          </a>
+        </div>
+      `;
+      return;
+    }
+    
+    const subtotal = cart.reduce((s, i) => s + i.product.price * i.quantity, 0);
+    const shipping = subtotal >= 3000 ? 0 : 500;
+    const totalQty = cart.reduce((s, i) => s + i.quantity, 0);
+    
+    cartContent.innerHTML = `
+      <div class="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-8">
+        <div class="space-y-4">
+          ${cart.map(({ product, quantity }) => `
+            <div class="flex gap-5 p-4 bg-[#FFFDFC] border border-[#E6DDD6] rounded-[16px]" data-item-id="${product.id}">
+              <a href="/product/${product.id}" class="w-24 h-28 rounded-[10px] overflow-hidden bg-[#F9F5EF] flex-shrink-0 block">
+                <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover" />
+              </a>
+              <div class="flex-1 min-w-0">
+                <div class="flex justify-between items-start mb-1">
+                  <h3 class="font-semibold text-[#332C29] text-sm leading-snug">${product.name}</h3>
+                  <button class="cart-remove text-[#8C817B] hover:text-[#332C29] transition-colors ml-2 flex-shrink-0" data-id="${product.id}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                  </button>
+                </div>
+                <p class="text-xs text-[#8C817B] mb-4 capitalize">${product.category}</p>
+                <div class="flex items-center justify-between flex-wrap gap-2">
+                  <div class="inline-flex items-center border border-[#E6DDD6] rounded-full overflow-hidden" data-qty-selector data-value="${quantity}" data-min="1" data-max="10" data-item-id="${product.id}">
+                    <button class="cart-qty-minus w-7 h-7 flex items-center justify-center text-[#665C57] hover:bg-[#F9F5EF] transition-colors">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                      </svg>
+                    </button>
+                    <span class="w-7 text-center text-xs font-medium text-[#332C29] qty-value">${quantity}</span>
+                    <button class="cart-qty-plus w-7 h-7 flex items-center justify-center text-[#665C57] hover:bg-[#F9F5EF] transition-colors">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                      </svg>
+                    </button>
+                  </div>
+                  <span class="font-semibold text-[#332C29]">${fmt(product.price * quantity)}</span>
+                </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+
+        <div class="bg-[#FFFDFC] border border-[#E6DDD6] rounded-[16px] p-6 h-fit sticky top-20">
+          <h2 style="font-family: 'DM Serif Display', Georgia, serif;" class="font-semibold text-[#332C29] mb-5 text-lg">Resumen del pedido</h2>
+          <div class="space-y-3 mb-5 text-sm">
+            <div class="flex justify-between">
+              <span class="text-[#665C57]">Subtotal (${totalQty} items)</span>
+              <span class="text-[#332C29]">${fmt(subtotal)}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-[#665C57]">Envío</span>
+              <span class="${shipping === 0 ? 'text-[#B8C6B2] font-semibold' : 'text-[#332C29]'}">${shipping === 0 ? 'Gratis' : fmt(shipping)}</span>
+            </div>
+            ${subtotal < 3000 ? `
+              <p class="text-xs text-[#8C817B] bg-[#F9F5EF] rounded-[8px] px-3 py-2">
+                Te faltan ${fmt(3000 - subtotal)} para el envío gratis
+              </p>
+            ` : ''}
+          </div>
+          <div class="border-t border-[#E6DDD6] pt-4 mb-5">
+            <div class="flex justify-between font-bold text-[#332C29]">
+              <span>Total</span>
+              <span>${fmt(subtotal + shipping)}</span>
+            </div>
+          </div>
+          <a href="/checkout" class="w-full py-3.5 bg-[#8E6F62] text-[#FFFDFC] rounded-full font-semibold text-sm hover:bg-[#6F554A] transition-colors flex items-center justify-center gap-2 min-h-[44px]">
+            Finalizar compra
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </a>
+          <a href="/category" class="w-full mt-2 py-2.5 text-[#665C57] text-sm text-center hover:text-[#332C29] transition-colors block">
+            Seguir comprando
+          </a>
+        </div>
+      </div>
+    `;
+    
+    // Attach event listeners
+    attachCartEventListeners();
+  };
+  
+  const attachCartEventListeners = () => {
+    // Remove buttons
+    document.querySelectorAll('.cart-remove').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        cart = cart.filter((i: any) => i.product.id !== id);
+        localStorage.setItem('cart', JSON.stringify(cart));
+        renderCart();
+        window.dispatchEvent(new CustomEvent('cart-updated'));
+      });
+    });
+    
+    // Quantity selectors
+    document.querySelectorAll('[data-qty-selector]').forEach(selector => {
+      const minusBtn = selector.querySelector('.cart-qty-minus');
+      const plusBtn = selector.querySelector('.cart-qty-plus');
+      const valueDisplay = selector.querySelector('.qty-value');
+      const itemId = selector.dataset.itemId;
+      
+      let currentValue = parseInt(selector.dataset.value || '1');
+      const minValue = parseInt(selector.dataset.min || '1');
+      const maxValue = parseInt(selector.dataset.max || '10');
+      
+      const updateDisplay = () => {
+        valueDisplay.textContent = currentValue;
+        selector.dataset.value = currentValue;
+        
+        // Update cart
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        cart = cart.map((i: any) => i.product.id === itemId ? { ...i, quantity: currentValue } : i);
+        localStorage.setItem('cart', JSON.stringify(cart));
+        renderCart();
+        window.dispatchEvent(new CustomEvent('cart-updated'));
+      };
+      
+      minusBtn.addEventListener('click', () => {
+        if (currentValue > minValue) {
+          currentValue--;
+          updateDisplay();
+        }
+      });
+      
+      plusBtn.addEventListener('click', () => {
+        if (currentValue < maxValue) {
+          currentValue++;
+          updateDisplay();
+        }
+      });
+    });
+  };
+  
+  // Initial render
+  renderCart();
+  
+  // Listen for cart updates
+  window.addEventListener('cart-updated', renderCart);
+</script>

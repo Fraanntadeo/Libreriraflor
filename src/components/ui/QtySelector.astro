@@ -1,0 +1,65 @@
+---
+interface Props {
+  value: number;
+  min?: number;
+  max?: number;
+}
+
+const { value, min = 1, max = 100 } = Astro.props;
+---
+
+<div class="inline-flex items-center border border-[#E6DDD6] rounded-full overflow-hidden" data-qty-selector data-value={value} data-min={min} data-max={max}>
+  <button
+    class="w-11 h-11 flex items-center justify-center text-[#665C57] hover:bg-[#F9F5EF] transition-colors qty-minus"
+    aria-label="Decrease quantity"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="5" y1="12" x2="19" y2="12"></line>
+    </svg>
+  </button>
+  <span class="w-10 text-center text-sm font-medium text-[#332C29] select-none qty-value">{value}</span>
+  <button
+    class="w-11 h-11 flex items-center justify-center text-[#665C57] hover:bg-[#F9F5EF] transition-colors qty-plus"
+    aria-label="Increase quantity"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="12" y1="5" x2="12" y2="19"></line>
+      <line x1="5" y1="12" x2="19" y2="12"></line>
+    </svg>
+  </button>
+</div>
+
+<script>
+  document.querySelectorAll('[data-qty-selector]').forEach(selector => {
+    const minusBtn = selector.querySelector('.qty-minus');
+    const plusBtn = selector.querySelector('.qty-plus');
+    const valueDisplay = selector.querySelector('.qty-value');
+    
+    let currentValue = parseInt(selector.dataset.value || '1');
+    const minValue = parseInt(selector.dataset.min || '1');
+    const maxValue = parseInt(selector.dataset.max || '100');
+
+    const updateDisplay = () => {
+      valueDisplay.textContent = currentValue;
+      selector.dataset.value = currentValue;
+      selector.dispatchEvent(new CustomEvent('qty-change', { 
+        detail: currentValue,
+        bubbles: true 
+      }));
+    };
+
+    minusBtn.addEventListener('click', () => {
+      if (currentValue > minValue) {
+        currentValue--;
+        updateDisplay();
+      }
+    });
+
+    plusBtn.addEventListener('click', () => {
+      if (currentValue < maxValue) {
+        currentValue++;
+        updateDisplay();
+      }
+    });
+  });
+</script>

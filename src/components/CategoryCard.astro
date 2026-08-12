@@ -1,0 +1,29 @@
+---
+import type { Category } from "../data";
+
+interface Props {
+  category: Category;
+}
+
+const { category } = Astro.props;
+---
+
+<a
+  href="/category"
+  class="group relative rounded-[16px] overflow-hidden aspect-[3/4] w-full cursor-pointer block"
+>
+  <img
+    src={category.image}
+    alt={category.name}
+    class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.04]"
+  />
+  <div class="absolute inset-0 bg-gradient-to-t from-[#332C29]/70 via-[#332C29]/10 to-transparent" />
+  <div class="absolute bottom-0 left-0 right-0 p-4 text-left">
+    <p style="font-family: 'DM Serif Display', Georgia, serif;" class="text-[#FFFDFC] font-semibold text-sm">
+      {category.name}
+    </p>
+    <p class="text-[#E9DDD7]/70 text-[11px] mt-0.5">
+      {category.count} productos
+    </p>
+  </div>
+</a>

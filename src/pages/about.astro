@@ -1,0 +1,80 @@
+---
+import Layout from "../layouts/Layout.astro";
+import SLabel from "../components/ui/SLabel.astro";
+---
+
+<Layout title="Nosotros — Páginas" current="about">
+  <main>
+    <section class="bg-[#E9DDD7] py-20 md:py-28">
+      <div class="max-w-[1200px] mx-auto px-6 text-center max-w-2xl mx-auto">
+        <SLabel>Nuestra historia</SLabel>
+        <h1 style="font-family: 'DM Serif Display', Georgia, serif;" class="text-4xl md:text-5xl lg:text-6xl text-[#332C29] mb-5 leading-tight">
+          Hacemos papelería<br />como se hacía antes.
+        </h1>
+        <p class="text-[#665C57] max-w-lg mx-auto leading-relaxed">
+          Desde un pequeño taller en Buenos Aires, diseñamos y producimos papelería que vale la pena conservar.
+        </p>
+      </div>
+    </section>
+
+    <section class="max-w-[1200px] mx-auto px-6 py-16 md:py-20">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+        <div>
+          <SLabel>2019 — hoy</SLabel>
+          <h2 style="font-family: 'DM Serif Display', Georgia, serif;" class="text-3xl text-[#332C29] mb-5">Todo comenzó con un cuaderno.</h2>
+          <p class="text-[#665C57] leading-relaxed mb-4 text-sm">
+            Páginas nació cuando su fundadora, después de años buscando el cuaderno perfecto sin encontrarlo, decidió hacerlo ella misma. Lo que empezó como un proyecto personal en una mesa de cocina se convirtió en una pequeña marca que hoy llega a toda Argentina.
+          </p>
+          <p class="text-[#665C57] leading-relaxed mb-4 text-sm">
+            Trabajamos con papeleros artesanales, seleccionamos cada gramaje, probamos cada tinta. Creemos que los objetos de escritura merecen la misma atención que los libros que llenan.
+          </p>
+          <p class="text-[#665C57] leading-relaxed text-sm">
+            Hoy somos un equipo de cuatro personas apasionadas por el papel, la tipografía y el diseño que dura.
+          </p>
+        </div>
+        <div class="rounded-[24px] overflow-hidden aspect-[4/3] bg-[#E9DDD7]">
+          <img src="https://images.unsplash.com/photo-1584628805011-382667dc3229?w=800&h=600&fit=crop&auto=format"
+            alt="Nuestro taller" class="w-full h-full object-cover" />
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-[#F9F5EF] py-16 md:py-20">
+      <div class="max-w-[1200px] mx-auto px-6">
+        <div class="text-center mb-12">
+          <SLabel>Lo que nos guía</SLabel>
+          <h2 style="font-family: 'DM Serif Display', Georgia, serif;" class="text-3xl md:text-4xl text-[#332C29]">Nuestros valores</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {[
+            { title: "Materiales honestos", text: "Usamos papeles de alta gramaje, linos naturales y materiales que envejecen bien. Nada de apariencias ni atajos." },
+            { title: "Producción consciente", text: "Pequeñas tiradas, sin sobreproducción. Cada lote es revisado a mano antes de salir del taller." },
+            { title: "Diseño atemporal", text: "No seguimos tendencias. Diseñamos productos que se van a ver bien en diez años y que se van a usar todos los días." },
+          ].map(({ title, text }) => (
+            <div class="bg-[#FFFDFC] border border-[#E6DDD6] rounded-[16px] p-6">
+              <div class="w-10 h-10 rounded-full bg-[#E9DDD7] flex items-center justify-center mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8E6F62" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                </svg>
+              </div>
+              <h3 style="font-family: 'DM Serif Display', Georgia, serif;" class="font-semibold text-[#332C29] mb-2">{title}</h3>
+              <p class="text-sm text-[#665C57] leading-relaxed">{text}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="max-w-[1200px] mx-auto px-6 py-16 md:py-20 text-center">
+      <h2 style="font-family: 'DM Serif Display', Georgia, serif;" class="text-3xl md:text-4xl text-[#332C29] mb-4">¿Lista para escribir?</h2>
+      <p class="text-[#665C57] mb-8 text-sm">Explorá nuestra tienda y encontrá el compañero perfecto para tu día a día.</p>
+      <a
+        href="/category"
+        class="px-8 py-3.5 bg-[#8E6F62] text-[#FFFDFC] rounded-full font-semibold hover:bg-[#6F554A] transition-colors duration-200 text-sm inline-block min-h-[44px]"
+      >
+        Ver productos
+      </a>
+    </section>
+  </main>
+</Layout>

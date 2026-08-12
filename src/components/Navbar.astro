@@ -1,0 +1,122 @@
+---
+const LINKS = [
+  { label: "Inicio", page: "home" },
+  { label: "Tienda", page: "category" },
+  { label: "Nosotros", page: "about" },
+];
+
+interface Props {
+  current?: string;
+  cartCount?: number;
+}
+
+const { current = "home", cartCount = 0 } = Astro.props;
+---
+
+<header
+  class="sticky top-0 z-50 border-b border-[#E6DDD6]"
+  style="background-color: rgba(255,253,252,0.96); backdrop-filter: blur(12px);"
+>
+  <div class="max-w-[1200px] mx-auto px-6">
+    <div class="flex items-center justify-between h-[60px]">
+      {/* Logo */}
+      <a
+        href="/"
+        class="flex items-center gap-2.5 group"
+      >
+        <div class="w-7 h-7 rounded-full bg-[#8E6F62] flex items-center justify-center flex-shrink-0 group-hover:bg-[#6F554A] transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#FFFDFC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          </svg>
+        </div>
+        <span
+          style="font-family: 'DM Serif Display', Georgia, serif;"
+          class="text-[#332C29] text-lg font-semibold tracking-tight"
+        >
+          Páginas
+        </span>
+      </a>
+
+      {/* Desktop nav */}
+      <nav class="hidden md:flex items-center gap-8">
+        {LINKS.map(({ label, page }) => (
+          <a
+            key={page}
+            href={`/${page === "home" ? "" : page}`}
+            class={`text-sm font-medium transition-colors duration-200 ${
+              current === page
+                ? "text-[#8E6F62]"
+                : "text-[#665C57] hover:text-[#332C29]"
+            }`}
+          >
+            {label}
+          </a>
+        ))}
+      </nav>
+
+      {/* Actions */}
+      <div class="flex items-center gap-1">
+        <button
+          id="cart-btn"
+          class="relative flex items-center justify-center w-10 h-10 rounded-full hover:bg-[#F9F5EF] text-[#665C57] hover:text-[#332C29] transition-colors duration-200"
+          aria-label="Open cart"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <path d="M16 10a4 4 0 0 1-8 0"></path>
+          </svg>
+          {cartCount > 0 && (
+            <span class="absolute top-1.5 right-1.5 w-3.5 h-3.5 bg-[#8E6F62] text-[#FFFDFC] text-[9px] font-bold rounded-full flex items-center justify-center leading-none">
+              {cartCount > 9 ? "9+" : cartCount}
+            </span>
+          )}
+        </button>
+        <button
+          id="mobile-menu-btn"
+          class="md:hidden flex items-center justify-center w-10 h-10 rounded-full hover:bg-[#F9F5EF] text-[#665C57] transition-colors"
+          aria-label="Toggle menu"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  {/* Mobile menu */}
+  <div id="mobile-menu" class="md:hidden border-t border-[#E6DDD6] bg-[#FFFDFC] px-6 py-2 hidden">
+    {LINKS.map(({ label, page }) => (
+      <a
+        key={page}
+        href={`/${page === "home" ? "" : page}`}
+        class={`flex w-full py-3.5 text-sm font-medium border-b border-[#E6DDD6] last:border-0 transition-colors ${
+          current === page ? "text-[#8E6F62]" : "text-[#332C29]"
+        }`}
+      >
+        {label}
+      </a>
+    ))}
+  </div>
+</header>
+
+<script>
+  const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const cartBtn = document.getElementById('cart-btn');
+  
+  let menuOpen = false;
+  
+  mobileMenuBtn.addEventListener('click', () => {
+    menuOpen = !menuOpen;
+    mobileMenu.classList.toggle('hidden', !menuOpen);
+  });
+  
+  cartBtn.addEventListener('click', () => {
+    window.dispatchEvent(new CustomEvent('cart-open'));
+  });
+</script>

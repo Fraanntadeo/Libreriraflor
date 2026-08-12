@@ -1,0 +1,85 @@
+:root {
+  --font-size: 16px;
+  --background: #F9F5EF;
+  --foreground: #332C29;
+  --card: #FFFDFC;
+  --card-foreground: #332C29;
+  --popover: #FFFDFC;
+  --popover-foreground: #332C29;
+  --primary: #8E6F62;
+  --primary-foreground: #FFFDFC;
+  --secondary: #E9DDD7;
+  --secondary-foreground: #6F554A;
+  --muted: #F9F5EF;
+  --muted-foreground: #8C817B;
+  --accent: #B8C6B2;
+  --accent-foreground: #332C29;
+  --destructive: #d4183d;
+  --destructive-foreground: #ffffff;
+  --border: #E6DDD6;
+  --input: transparent;
+  --input-background: #F9F5EF;
+  --switch-background: #E9DDD7;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --ring: #8E6F62;
+  --radius: 0.625rem;
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: "Manrope", system-ui, sans-serif;
+  }
+
+  html {
+    font-size: var(--font-size);
+  }
+
+  h1 {
+    font-size: 1.5rem;
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h3 {
+    font-size: 1.125rem;
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h4 {
+    font-size: 1rem;
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  label {
+    font-size: 1rem;
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  button {
+    font-size: 1rem;
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  input {
+    font-size: 1rem;
+    font-weight: var(--font-weight-normal);
+    line-height: 1.5;
+  }
+}

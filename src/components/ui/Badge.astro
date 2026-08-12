@@ -1,0 +1,34 @@
+---
+import { cn } from "../../utils";
+
+type BadgeVariant = "new" | "sale" | "bestseller" | "outofstock";
+
+interface Props {
+  variant: BadgeVariant;
+}
+
+const { variant } = Astro.props;
+
+const STYLES: Record<BadgeVariant, string> = {
+  new: "bg-[#B8C6B2] text-[#253820]",
+  sale: "bg-[#E8C8C8] text-[#4a2828]",
+  bestseller: "bg-[#E9D8A6] text-[#3d3010]",
+  outofstock: "bg-[#E6DDD6] text-[#8C817B]",
+};
+
+const LABELS: Record<BadgeVariant, string> = {
+  new: "Nuevo",
+  sale: "Oferta",
+  bestseller: "Más vendido",
+  outofstock: "Sin stock",
+};
+---
+
+<span
+  class={cn(
+    "inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase",
+    STYLES[variant]
+  )}
+>
+  {LABELS[variant]}
+</span>

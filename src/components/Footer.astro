@@ -1,0 +1,121 @@
+---
+const COLS = [
+  {
+    title: "Tienda",
+    items: ["Cuadernos", "Agendas", "Planners", "Cuadernillos", "Stickers"],
+    page: "category",
+  },
+  {
+    title: "Nosotros",
+    items: ["Nuestra historia", "Materiales", "Proceso artesanal", "Blog"],
+    page: "about",
+  },
+  {
+    title: "Ayuda",
+    items: ["Envíos", "Devoluciones", "Preguntas frecuentes", "Contacto"],
+    page: "home",
+  },
+];
+---
+
+<footer class="bg-[#332C29] text-[#E9DDD7] pt-16 pb-8">
+  <div class="max-w-[1200px] mx-auto px-6">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-10 mb-12">
+      {/* Brand */}
+      <div class="col-span-2 md:col-span-1">
+        <div class="flex items-center gap-2 mb-4">
+          <div
+            class="w-7 h-7 rounded-full bg-[#E9DDD7] flex items-center justify-center"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#332C29"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+              <path
+                d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"
+              ></path>
+            </svg>
+          </div>
+          <span
+            style="font-family: 'DM Serif Display', Georgia, serif;"
+            class="text-lg font-semibold"
+          >
+            Páginas
+          </span>
+        </div>
+        <p class="text-sm text-[#8C817B] leading-relaxed mb-5">
+          Papelería artesanal pensada para acompañarte todos los días.
+        </p>
+        <div class="flex gap-2">
+          <a
+            href="#"
+            class="w-8 h-8 rounded-full border border-[#4A4440] flex items-center justify-center hover:border-[#8C817B] transition-colors duration-200"
+            aria-label="Instagram"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      {/* Columns */}
+      {
+        COLS.map((col) => (
+          <div>
+            <h4 class="text-[10px] font-bold uppercase tracking-[0.18em] text-[#665C57] mb-4">
+              {col.title}
+            </h4>
+            <ul class="space-y-2.5">
+              {col.items.map((item) => (
+                <li>
+                  <a
+                    href={`/${col.page === "home" ? "" : col.page}`}
+                    class="text-sm text-[#8C817B] hover:text-[#E9DDD7] transition-colors duration-150"
+                  >
+                    {item}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+
+    <div
+      class="border-t border-[#4A4440] pt-6 flex flex-col sm:flex-row justify-between items-center gap-3 text-[11px] text-[#665C57]"
+    >
+      <span>© 2025 Páginas. Hecho con cuidado en Buenos Aires.</span>
+      <div class="flex gap-5">
+        {
+          ["Términos y condiciones", "Política de privacidad"].map((item) => (
+            <button class="hover:text-[#8C817B] transition-colors">
+              {item}
+            </button>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</footer>
