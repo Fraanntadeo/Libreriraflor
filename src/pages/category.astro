@@ -1,24 +1,19 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { CATEGORIES, PRODUCTS, type Product } from "../data";
+import { CATEGORIES, PRODUCTS } from "../data";
 import ProductCard from "../components/ProductCard.astro";
 import SLabel from "../components/ui/SLabel.astro";
 import Breadcrumb from "../components/ui/Breadcrumb.astro";
-
-const wishlist = JSON.parse(Astro.locals?.wishlist || '[]');
 ---
 
 <Layout title="Tienda — Páginas" current="category">
   <main class="max-w-[1200px] mx-auto px-6 py-8 md:py-12">
     <div class="mb-6">
-      <Breadcrumb items={[
-        { label: "Inicio", href: "/" },
-        { label: "Tienda" }
-      ]} />
+      <Breadcrumb items={[{ label: "Inicio", href: "/" }, { label: "Tienda" }]} />
     </div>
 
     <div class="flex flex-col md:flex-row gap-8">
-      {/* Sidebar (desktop) */}
+      <!-- Sidebar desktop -->
       <aside class="hidden md:block w-52 flex-shrink-0">
         <div class="sticky top-[76px]">
           <h3 class="text-[10px] font-bold uppercase tracking-[0.18em] text-[#8C817B] mb-3">Categorías</h3>
@@ -27,7 +22,12 @@ const wishlist = JSON.parse(Astro.locals?.wishlist || '[]');
               <li>
                 <button
                   data-category={cat.id}
-                  class="category-filter w-full text-left px-3 py-2 rounded-[8px] text-sm transition-colors duration-150 flex justify-between items-center bg-[#E9DDD7] text-[#6F554A] font-semibold"
+                  class:list={[
+                    "category-filter w-full text-left px-3 py-2 rounded-[8px] text-sm transition-colors duration-150 flex justify-between items-center",
+                    cat.id === "all"
+                      ? "bg-[#E9DDD7] text-[#6F554A] font-semibold"
+                      : "text-[#665C57] hover:bg-[#F9F5EF]",
+                  ]}
                 >
                   <span>{cat.name}</span>
                   <span class="text-[11px] text-[#8C817B]">{cat.count}</span>
@@ -39,7 +39,7 @@ const wishlist = JSON.parse(Astro.locals?.wishlist || '[]');
           <div class="mt-8">
             <h3 class="text-[10px] font-bold uppercase tracking-[0.18em] text-[#8C817B] mb-3">Disponibilidad</h3>
             <label class="flex items-center gap-2.5 px-3 py-2 cursor-pointer">
-              <input type="checkbox" class="w-3.5 h-3.5 accent-[#8E6F62]" />
+              <input type="checkbox" id="in-stock-filter" class="w-3.5 h-3.5 accent-[#8E6F62]" />
               <span class="text-sm text-[#665C57]">Solo con stock</span>
             </label>
           </div>
@@ -47,8 +47,8 @@ const wishlist = JSON.parse(Astro.locals?.wishlist || '[]');
           <div class="mt-8">
             <h3 class="text-[10px] font-bold uppercase tracking-[0.18em] text-[#8C817B] mb-3">Precio</h3>
             {[["Hasta $1.000", "0-1000"], ["$1.000 – $2.000", "1000-2000"], ["Más de $2.000", "2000+"]].map(([label, range]) => (
-              <label key={range} class="flex items-center gap-2.5 px-3 py-2 cursor-pointer">
-                <input type="checkbox" class="w-3.5 h-3.5 accent-[#8E6F62]" />
+              <label class="flex items-center gap-2.5 px-3 py-2 cursor-pointer">
+                <input type="checkbox" data-price-range={range} class="price-filter w-3.5 h-3.5 accent-[#8E6F62]" />
                 <span class="text-sm text-[#665C57]">{label}</span>
               </label>
             ))}
@@ -56,7 +56,7 @@ const wishlist = JSON.parse(Astro.locals?.wishlist || '[]');
         </div>
       </aside>
 
-      {/* Products area */}
+      <!-- Área de productos -->
       <div class="flex-1">
         <div class="flex items-center justify-between mb-5">
           <p class="text-sm text-[#8C817B]">
@@ -68,14 +68,10 @@ const wishlist = JSON.parse(Astro.locals?.wishlist || '[]');
               class="md:hidden flex items-center gap-1.5 px-3.5 py-2 border border-[#E6DDD6] rounded-full text-sm text-[#665C57] hover:border-[#8E6F62] transition-colors min-h-[44px]"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="4" y1="21" x2="4" y2="14"></line>
-                <line x1="4" y1="10" x2="4" y2="3"></line>
-                <line x1="12" y1="21" x2="12" y2="12"></line>
-                <line x1="12" y1="8" x2="12" y2="3"></line>
-                <line x1="20" y1="21" x2="20" y2="16"></line>
-                <line x1="20" y1="12" x2="20" y2="3"></line>
-                <line x1="1" y1="14" x2="7" y2="14"></line>
-                <line x1="9" y1="8" x2="15" y2="8"></line>
+                <line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line>
+                <line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line>
+                <line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line>
                 <line x1="17" y1="16" x2="23" y2="16"></line>
               </svg>
               Filtros
@@ -92,41 +88,41 @@ const wishlist = JSON.parse(Astro.locals?.wishlist || '[]');
           </div>
         </div>
 
-        {/* Mobile pills */}
+        <!-- Pills mobile -->
         <div class="flex gap-2 overflow-x-auto pb-3 mb-4 md:hidden">
           {[{ id: "all", name: "Todas" }, ...CATEGORIES].map((cat) => (
             <button
-              key={cat.id}
               data-category={cat.id}
-              class="mobile-category-filter flex-shrink-0 px-4 py-2 rounded-full text-xs font-semibold transition-colors min-h-[44px] bg-[#8E6F62] text-[#FFFDFC]"
+              class:list={[
+                "mobile-category-filter flex-shrink-0 px-4 py-2 rounded-full text-xs font-semibold transition-colors min-h-[44px]",
+                cat.id === "all"
+                  ? "bg-[#8E6F62] text-[#FFFDFC]"
+                  : "bg-[#F9F5EF] text-[#665C57] border border-[#E6DDD6]",
+              ]}
             >
               {cat.name}
             </button>
           ))}
         </div>
 
+        <!-- Grid de productos (SSR inicial, JS lo re-renderiza al filtrar) -->
         <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {PRODUCTS.map((p) => (
-            <ProductCard
-              key={p.id}
-              product={p}
-              inWishlist={wishlist.includes(p.id)}
-            />
+            <ProductCard product={p} />
           ))}
         </div>
       </div>
     </div>
 
-    {/* Mobile filters bottom sheet */}
+    <!-- Filtros mobile bottom sheet -->
     <div id="mobile-filters" class="fixed inset-0 z-50 hidden">
       <div id="mobile-filters-overlay" class="fixed inset-0 z-40 bg-black/20"></div>
       <div class="fixed bottom-0 left-0 right-0 z-50 bg-[#FFFDFC] rounded-t-[24px] p-6 max-h-[80vh] overflow-y-auto shadow-2xl">
         <div class="flex items-center justify-between mb-5">
           <h3 style="font-family: 'DM Serif Display', Georgia, serif;" class="text-lg font-semibold text-[#332C29]">Filtros</h3>
-          <button id="mobile-filters-close" class="text-[#665C57]">
+          <button id="mobile-filters-close" class="text-[#665C57]" aria-label="Cerrar filtros">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
+              <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
           </button>
         </div>
@@ -134,9 +130,8 @@ const wishlist = JSON.parse(Astro.locals?.wishlist || '[]');
         <div class="space-y-1 mb-6">
           {[{ id: "all", name: "Todas" }, ...CATEGORIES].map((cat) => (
             <button
-              key={cat.id}
               data-category={cat.id}
-              class="mobile-category-filter-sheet w-full text-left px-3 py-3 rounded-[8px] text-sm transition-colors min-h-[44px] bg-[#E9DDD7] text-[#6F554A] font-semibold"
+              class="mobile-category-filter-sheet w-full text-left px-3 py-3 rounded-[8px] text-sm transition-colors min-h-[44px] text-[#665C57] hover:bg-[#F9F5EF]"
             >
               {cat.name}
             </button>
@@ -150,188 +145,226 @@ const wishlist = JSON.parse(Astro.locals?.wishlist || '[]');
   </main>
 </Layout>
 
-<script define:vars={{ PRODUCTS, CATEGORIES }}>
-  let activeFilter = 'all';
-  let sortBy = 'relevance';
-  
-  const categoryFilters = document.querySelectorAll('.category-filter, .mobile-category-filter, .mobile-category-filter-sheet');
-  const sortSelect = document.getElementById('sort-select');
-  const productsGrid = document.getElementById('products-grid');
-  const productCount = document.getElementById('product-count');
-  const mobileFiltersBtn = document.getElementById('mobile-filters-btn');
-  const mobileFilters = document.getElementById('mobile-filters');
-  const mobileFiltersOverlay = document.getElementById('mobile-filters-overlay');
-  const mobileFiltersClose = document.getElementById('mobile-filters-close');
-  const mobileFiltersApply = document.getElementById('mobile-filters-apply');
-  
-  const filterAndSortProducts = () => {
-    let filtered = activeFilter === 'all' ? PRODUCTS : PRODUCTS.filter((p) => p.category === activeFilter);
-    
-    if (sortBy === 'price-asc') {
-      filtered = [...filtered].sort((a, b) => a.price - b.price);
-    } else if (sortBy === 'price-desc') {
-      filtered = [...filtered].sort((a, b) => b.price - a.price);
-    } else if (sortBy === 'rating') {
-      filtered = [...filtered].sort((a, b) => b.rating - a.rating);
-    }
-    
-    productCount.textContent = filtered.length;
-    
-    // Re-render products
-    productsGrid.innerHTML = filtered.map((p) => {
-      const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
-      const inWishlist = wishlist.includes(p.id);
-      
-      return `
-        <article
-          class="group relative flex flex-col bg-[#FFFDFC] rounded-[16px] overflow-hidden border border-[#E6DDD6] cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(142,111,98,0.10)]"
-          data-product-id="${p.id}"
-        >
-          <div class="relative aspect-[4/5] bg-[#F9F5EF] overflow-hidden">
-            <a href="/product/${p.id}">
-              <img
-                src="${p.image}"
-                alt="${p.name}"
-                class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-              />
-            </a>
-            ${(p.badge || !p.inStock) && `
-              <div class="absolute top-3 left-3">
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase ${!p.inStock ? 'bg-[#E6DDD6] text-[#8C817B]' : p.badge === 'new' ? 'bg-[#B8C6B2] text-[#253820]' : p.badge === 'sale' ? 'bg-[#E8C8C8] text-[#4a2828]' : 'bg-[#E9D8A6] text-[#3d3010]'}">
-                  ${!p.inStock ? 'Sin stock' : p.badge === 'new' ? 'Nuevo' : p.badge === 'sale' ? 'Oferta' : 'Más vendido'}
-                </span>
+<!--
+  Script 1: Filtrado y ordenamiento.
+  Usa define:vars para recibir PRODUCTS del servidor.
+  Solo lógica de UI — sin TypeScript, sin imports.
+-->
+<script define:vars={{ PRODUCTS }}>
+  let activeFilter = "all";
+  let sortBy = "relevance";
+
+  const productsGrid    = document.getElementById("products-grid");
+  const productCount    = document.getElementById("product-count");
+  const sortSelect      = document.getElementById("sort-select");
+  const mobileFilters   = document.getElementById("mobile-filters");
+  const mobileFiltersBtn= document.getElementById("mobile-filters-btn");
+  const mobileFiltersOverlay = document.getElementById("mobile-filters-overlay");
+  const mobileFiltersClose   = document.getElementById("mobile-filters-close");
+  const mobileFiltersApply   = document.getElementById("mobile-filters-apply");
+
+  const allCategoryBtns = document.querySelectorAll(
+    ".category-filter, .mobile-category-filter, .mobile-category-filter-sheet"
+  );
+
+  // Función auxiliar para el badge inline
+  const badgeHTML = (p) => {
+    if (!p.badge && p.inStock) return "";
+    const variant = !p.inStock ? "outofstock" : p.badge;
+    const configs = {
+      new:        { cls: "bg-[#B8C6B2] text-[#253820]", label: "Nuevo" },
+      sale:       { cls: "bg-[#E8C8C8] text-[#4a2828]", label: "Oferta" },
+      bestseller: { cls: "bg-[#E9D8A6] text-[#3d3010]", label: "Más vendido" },
+      outofstock: { cls: "bg-[#E6DDD6] text-[#8C817B]", label: "Sin stock" },
+    };
+    const c = configs[variant] || configs.outofstock;
+    return `<div class="absolute top-3 left-3"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase ${c.cls}">${c.label}</span></div>`;
+  };
+
+  // Renderizar un producto como HTML string
+  const productCardHTML = (p) => {
+    const cartProduct = JSON.stringify({
+      id: p.id,
+      name: p.name,
+      price: p.price,
+      image: p.image,
+      category: p.category,
+    });
+    const price = "$" + p.price.toLocaleString("es-AR");
+    const origPrice = p.originalPrice
+      ? `<span class="text-xs text-[#8C817B] line-through">$${p.originalPrice.toLocaleString("es-AR")}</span>`
+      : "";
+    const stars = [1, 2, 3, 4, 5]
+      .map((n) => {
+        const filled = n <= Math.round(p.rating) ? "#E9D8A6" : "#E6DDD6";
+        return `<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="${filled}" stroke="${filled}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
+      })
+      .join("");
+
+    const btnClass = p.inStock
+      ? "bg-[#8E6F62] text-[#FFFDFC] hover:bg-[#6F554A]"
+      : "bg-[#E6DDD6] text-[#8C817B] cursor-not-allowed";
+
+    return `
+      <article class="group relative flex flex-col bg-[#FFFDFC] rounded-[16px] overflow-hidden border border-[#E6DDD6] cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(142,111,98,0.10)]" data-product-id="${p.id}">
+        <div class="relative aspect-[4/5] bg-[#F9F5EF] overflow-hidden">
+          <a href="/product/${p.id}">
+            <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" loading="lazy" />
+          </a>
+          ${badgeHTML(p)}
+          <button class="wishlist-btn absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 flex items-center justify-center transition-all duration-200 shadow-sm opacity-0 group-hover:opacity-100" data-wishlist="false" data-product-id="${p.id}" aria-label="Toggle wishlist">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#8C817B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="wishlist-icon">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            </svg>
+          </button>
+        </div>
+        <div class="p-4 flex flex-col flex-1">
+          <p class="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#8C817B] mb-1">${p.category}</p>
+          <h3 class="text-sm font-semibold text-[#332C29] leading-snug mb-1.5">
+            <a href="/product/${p.id}" class="hover:text-[#8E6F62] transition-colors">${p.name}</a>
+          </h3>
+          <p class="text-xs text-[#8C817B] leading-relaxed mb-3 line-clamp-2">${p.description}</p>
+          <div class="mt-auto">
+            <div class="flex items-center gap-1.5 mb-3">
+              <div class="inline-flex gap-0.5">${stars}</div>
+              <span class="text-[11px] text-[#8C817B]">(${p.reviews})</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <div class="flex items-baseline gap-1.5">
+                <span class="font-semibold text-[#332C29] text-sm">${price}</span>
+                ${origPrice}
               </div>
-            `}
-            <button
-              class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 flex items-center justify-center transition-all duration-200 shadow-sm wishlist-btn ${inWishlist ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}"
-              data-wishlist="${inWishlist}"
-              data-product-id="${p.id}"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="${inWishlist ? '#E8C8C8' : 'none'}" stroke="${inWishlist ? '#E8C8C8' : '#8C817B'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="wishlist-icon">
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-              </svg>
-            </button>
-          </div>
-          <div class="p-4 flex flex-col flex-1">
-            <p class="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#8C817B] mb-1">${p.category}</p>
-            <h3 class="text-sm font-semibold text-[#332C29] leading-snug mb-1.5">
-              <a href="/product/${p.id}" class="hover:text-[#8E6F62] transition-colors">${p.name}</a>
-            </h3>
-            <p class="text-xs text-[#8C817B] leading-relaxed mb-3 line-clamp-2">${p.description}</p>
-            <div class="mt-auto">
-              <div class="flex items-center gap-1.5 mb-3">
-                <div class="inline-flex gap-0.5">
-                  ${[1, 2, 3, 4, 5].map((n) => `
-                    <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="${n <= Math.round(p.rating) ? '#E9D8A6' : '#E6DDD6'}" stroke="${n <= Math.round(p.rating) ? '#E9D8A6' : '#E6DDD6'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                    </svg>
-                  `).join('')}
-                </div>
-                <span class="text-[11px] text-[#8C817B]">(${p.reviews})</span>
-              </div>
-              <div class="flex items-center justify-between">
-                <div class="flex items-baseline gap-1.5">
-                  <span class="font-semibold text-[#332C29] text-sm">$${p.price.toLocaleString('es-AR')}</span>
-                  ${p.originalPrice ? `<span class="text-xs text-[#8C817B] line-through">$${p.originalPrice.toLocaleString('es-AR')}</span>` : ''}
-                </div>
-                <button class="px-3 py-1.5 rounded-full text-[11px] font-semibold transition-all duration-200 add-to-cart-btn ${p.inStock ? 'bg-[#8E6F62] text-[#FFFDFC] hover:bg-[#6F554A]' : 'bg-[#E6DDD6] text-[#8C817B] cursor-not-allowed'}" data-product-id="${p.id}" data-in-stock="${p.inStock}">
-                  ${p.inStock ? 'Agregar' : 'Sin stock'}
-                </button>
-              </div>
+              <button
+                class="add-to-cart-btn px-3 py-1.5 rounded-full text-[11px] font-semibold transition-all duration-200 ${btnClass}"
+                data-product="${cartProduct.replace(/"/g, '&quot;')}"
+                ${p.inStock ? "" : "disabled"}
+                aria-label="Agregar ${p.name} al carrito"
+              >
+                ${p.inStock ? "Agregar" : "Sin stock"}
+              </button>
             </div>
           </div>
-        </article>
-      `;
-    }).join('');
-    
-    // Re-attach event listeners to new elements
-    attachEventListeners();
+        </div>
+      </article>
+    `;
   };
-  
-  const attachEventListeners = () => {
-    // Wishlist buttons
-    document.querySelectorAll('.wishlist-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const productId = btn.dataset.productId;
-        const icon = btn.querySelector('.wishlist-icon');
-        const isInWishlist = btn.dataset.wishlist === 'true';
-        
-        const newState = !isInWishlist;
-        btn.dataset.wishlist = newState;
-        
-        icon.setAttribute('fill', newState ? '#E8C8C8' : 'none');
-        icon.setAttribute('stroke', newState ? '#E8C8C8' : '#8C817B');
-        
-        let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
-        if (newState) {
-          wishlist.push(productId);
-        } else {
-          wishlist = wishlist.filter((id: string) => id !== productId);
-        }
-        localStorage.setItem('wishlist', JSON.stringify(wishlist));
-      });
-    });
-    
-    // Add to cart buttons
-    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const productId = btn.dataset.productId;
-        const inStock = btn.dataset.inStock === 'true';
-        
-        if (!inStock) return;
-        
-        window.dispatchEvent(new CustomEvent('add-to-cart', { detail: productId }));
-      });
-    });
+
+  // Re-renderizar grid
+  const filterAndRender = () => {
+    let filtered = activeFilter === "all"
+      ? [...PRODUCTS]
+      : PRODUCTS.filter((p) => p.category === activeFilter);
+
+    if (sortBy === "price-asc")  filtered.sort((a, b) => a.price - b.price);
+    if (sortBy === "price-desc") filtered.sort((a, b) => b.price - a.price);
+    if (sortBy === "rating")     filtered.sort((a, b) => b.rating - a.rating);
+
+    if (productCount) productCount.textContent = filtered.length;
+    if (productsGrid) {
+      productsGrid.innerHTML = filtered.map(productCardHTML).join("");
+      syncWishlist();
+    }
   };
-  
-  // Category filter event listeners
-  categoryFilters.forEach(btn => {
-    btn.addEventListener('click', () => {
-      activeFilter = btn.dataset.category || 'all';
-      
-      // Update active state
-      categoryFilters.forEach(b => {
-        b.classList.remove('bg-[#E9DDD7]', 'text-[#6F554A]', 'font-semibold', 'bg-[#8E6F62]', 'text-[#FFFDFC]');
-        b.classList.add('text-[#665C57]', 'bg-[#F9F5EF]', 'border', 'border-[#E6DDD6]');
-      });
-      
-      if (btn.classList.contains('category-filter')) {
-        btn.classList.add('bg-[#E9DDD7]', 'text-[#6F554A]', 'font-semibold');
-        btn.classList.remove('text-[#665C57]', 'bg-[#F9F5EF]', 'border', 'border-[#E6DDD6]');
-      } else {
-        btn.classList.add('bg-[#8E6F62]', 'text-[#FFFDFC]');
-        btn.classList.remove('text-[#665C57]', 'bg-[#F9F5EF]', 'border', 'border-[#E6DDD6]');
+
+  // Sincronizar wishlist desde localStorage
+  const syncWishlist = () => {
+    const wishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
+    document.querySelectorAll(".wishlist-btn").forEach((btn) => {
+      const id = btn.dataset.productId;
+      if (wishlist.includes(id)) {
+        btn.dataset.wishlist = "true";
+        const icon = btn.querySelector(".wishlist-icon");
+        icon && icon.setAttribute("fill", "#E8C8C8") && icon.setAttribute("stroke", "#E8C8C8");
       }
-      
-      filterAndSortProducts();
-      
-      // Close mobile filters if open
-      mobileFilters.classList.add('hidden');
+    });
+  };
+
+  // Wishlist — event delegation sobre el grid
+  productsGrid && productsGrid.addEventListener("click", (e) => {
+    const btn = e.target.closest(".wishlist-btn");
+    if (!btn) return;
+    e.stopPropagation();
+    const productId = btn.dataset.productId;
+    const icon = btn.querySelector(".wishlist-icon");
+    const isActive = btn.dataset.wishlist === "true";
+    const newState = !isActive;
+
+    btn.dataset.wishlist = String(newState);
+    icon && icon.setAttribute("fill", newState ? "#E8C8C8" : "none");
+    icon && icon.setAttribute("stroke", newState ? "#E8C8C8" : "#8C817B");
+
+    const wishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
+    const updated = newState
+      ? [...wishlist, productId]
+      : wishlist.filter((id) => id !== productId);
+    localStorage.setItem("wishlist", JSON.stringify(updated));
+  });
+
+  // Filtros de categoría
+  allCategoryBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      activeFilter = btn.dataset.category || "all";
+
+      // Actualizar estilos activos (desktop sidebar)
+      document.querySelectorAll(".category-filter").forEach((b) => {
+        const isActive = b.dataset.category === activeFilter;
+        b.className = [
+          "category-filter w-full text-left px-3 py-2 rounded-[8px] text-sm transition-colors duration-150 flex justify-between items-center",
+          isActive ? "bg-[#E9DDD7] text-[#6F554A] font-semibold" : "text-[#665C57] hover:bg-[#F9F5EF]",
+        ].join(" ");
+      });
+
+      // Actualizar estilos activos (mobile pills)
+      document.querySelectorAll(".mobile-category-filter").forEach((b) => {
+        const isActive = b.dataset.category === activeFilter;
+        b.className = [
+          "mobile-category-filter flex-shrink-0 px-4 py-2 rounded-full text-xs font-semibold transition-colors min-h-[44px]",
+          isActive ? "bg-[#8E6F62] text-[#FFFDFC]" : "bg-[#F9F5EF] text-[#665C57] border border-[#E6DDD6]",
+        ].join(" ");
+      });
+
+      filterAndRender();
+      mobileFilters && mobileFilters.classList.add("hidden");
     });
   });
-  
-  // Sort select
-  sortSelect.addEventListener('change', (e) => {
+
+  // Ordenamiento
+  sortSelect && sortSelect.addEventListener("change", (e) => {
     sortBy = e.target.value;
-    filterAndSortProducts();
+    filterAndRender();
   });
-  
-  // Mobile filters
-  mobileFiltersBtn.addEventListener('click', () => {
-    mobileFilters.classList.remove('hidden');
+
+  // Filtros mobile
+  mobileFiltersBtn && mobileFiltersBtn.addEventListener("click", () => mobileFilters && mobileFilters.classList.remove("hidden"));
+  const closeMF = () => mobileFilters && mobileFilters.classList.add("hidden");
+  mobileFiltersOverlay && mobileFiltersOverlay.addEventListener("click", closeMF);
+  mobileFiltersClose && mobileFiltersClose.addEventListener("click", closeMF);
+  mobileFiltersApply && mobileFiltersApply.addEventListener("click", closeMF);
+
+  // Sincronizar wishlist inicial (SSR render)
+  syncWishlist();
+</script>
+
+<!--
+  Script 2: Add to cart — separado, tipado, usa cart.ts via import.
+  Event delegation sobre el grid para funcionar incluso después de re-renders.
+-->
+<script>
+  import { addToCart } from "../utils/cart";
+  import type { CartProduct } from "../utils/cart";
+
+  const grid = document.getElementById("products-grid");
+
+  grid?.addEventListener("click", (e) => {
+    const btn = (e.target as Element).closest<HTMLButtonElement>(".add-to-cart-btn");
+    if (!btn || btn.disabled) return;
+
+    const raw = btn.dataset.product;
+    if (!raw) return;
+
+    // El HTML escapa las comillas como &quot;, el dataset las restaura correctamente
+    const product = JSON.parse(btn.dataset.product!) as CartProduct;
+    addToCart(product, 1);
+    window.dispatchEvent(new CustomEvent("cart-open"));
   });
-  
-  const closeMobileFilters = () => {
-    mobileFilters.classList.add('hidden');
-  };
-  
-  mobileFiltersOverlay.addEventListener('click', closeMobileFilters);
-  mobileFiltersClose.addEventListener('click', closeMobileFilters);
-  mobileFiltersApply.addEventListener('click', closeMobileFilters);
-  
-  // Initial render
-  attachEventListeners();
 </script>

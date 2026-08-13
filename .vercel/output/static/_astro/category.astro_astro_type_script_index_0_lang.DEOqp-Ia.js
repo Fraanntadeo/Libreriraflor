@@ -1,0 +1,1 @@
+import{t as e}from"./cart.DgfxsXkZ.js";document.getElementById(`products-grid`)?.addEventListener(`click`,t=>{let n=t.target.closest(`.add-to-cart-btn`);if(!n||n.disabled||!n.dataset.product)return;let r=JSON.parse(n.dataset.product);e(r,1),window.dispatchEvent(new CustomEvent(`cart-open`))});

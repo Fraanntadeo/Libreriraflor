@@ -1,0 +1,53 @@
+---
+interface Props {
+  productId: string;
+  text?: string;
+}
+
+const {
+  productId,
+  text = "Agregar",
+} = Astro.props;
+---
+
+<button
+  type="button"
+  class="add-to-cart w-full px-5 py-3 bg-[#8E6F62] text-[#FFFDFC] rounded-full text-sm font-semibold hover:bg-[#6F554A] transition-colors duration-200 min-h-[44px]"
+  data-product-id={productId}
+>
+  {text}
+</button>
+
+<script>
+  import { addToCart } from "../../utils/cart";
+
+  document
+    .querySelectorAll<HTMLButtonElement>(".add-to-cart")
+    .forEach((button) => {
+      if (
+        button.dataset.cartInitialized === "true"
+      ) {
+        return;
+      }
+
+      button.dataset.cartInitialized = "true";
+
+      button.addEventListener("click", () => {
+        const productId =
+          button.dataset.productId;
+
+        if (!productId) {
+          console.error(
+            "AddToCart: falta productId"
+          );
+          return;
+        }
+
+        addToCart(productId);
+
+        window.dispatchEvent(
+          new CustomEvent("cart-open")
+        );
+      });
+    });
+</script>

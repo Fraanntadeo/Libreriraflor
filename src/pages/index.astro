@@ -337,41 +337,16 @@ const wishlist = JSON.parse(Astro.locals?.wishlist || '[]');
 </Layout>
 
 <script>
-  // Load wishlist from localStorage for client-side interactivity
-  if (typeof localStorage !== 'undefined') {
-    const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
-    
-    // Update wishlist buttons on page load
-    document.querySelectorAll('.wishlist-btn').forEach(btn => {
-      const productId = btn.dataset.productId;
-      if (wishlist.includes(productId)) {
-        btn.dataset.wishlist = 'true';
-        const icon = btn.querySelector('.wishlist-icon');
-        icon.setAttribute('fill', '#E8C8C8');
-        icon.setAttribute('stroke', '#E8C8C8');
-      }
-    });
-  }
-  
-  // Handle add to cart events
-  window.addEventListener('add-to-cart', (e) => {
-    const productId = e.detail;
-    const product = window.PRODUCTS?.find((p: any) => p.id === productId);
-    if (product) {
-      let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-      const existing = cart.find((i: any) => i.product.id === productId);
-      if (existing) {
-        cart = cart.map((i: any) => i.product.id === productId ? { ...i, quantity: i.quantity + 1 } : i);
-      } else {
-        cart.push({ product, quantity: 1 });
-      }
-      localStorage.setItem('cart', JSON.stringify(cart));
-      window.dispatchEvent(new CustomEvent('cart-updated'));
-      window.dispatchEvent(new CustomEvent('cart-open'));
+  // Actualizar wishlist buttons desde localStorage al cargar la página
+  const wishlist: string[] = JSON.parse(localStorage.getItem("wishlist") ?? "[]");
+
+  document.querySelectorAll<HTMLButtonElement>(".wishlist-btn").forEach((btn) => {
+    const productId = btn.dataset.productId ?? "";
+    if (wishlist.includes(productId)) {
+      btn.dataset.wishlist = "true";
+      const icon = btn.querySelector<SVGElement>(".wishlist-icon");
+      icon?.setAttribute("fill", "#E8C8C8");
+      icon?.setAttribute("stroke", "#E8C8C8");
     }
   });
-</script>
-
-<script define:vars={{ PRODUCTS }}>
-  window.PRODUCTS = PRODUCTS;
 </script>

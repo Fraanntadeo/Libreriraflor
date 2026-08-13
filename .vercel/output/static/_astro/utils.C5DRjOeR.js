@@ -1,0 +1,4 @@
+function e(e){return`$${e.toLocaleString(`es-AR`)}`}function t(t){return t>=3e3?`Gratis`:e(t>=3e3?0:500)}function n(n){if(n.length===0)return``;let r=n.reduce((e,t)=>e+t.product.price*t.quantity,0),i=r+(r>=3e3?0:500),a=[`Hola! 👋 Quiero realizar el siguiente pedido:
+`];for(let{product:t,quantity:r}of n)a.push(`📚 ${t.name}`),a.push(`Cantidad: ${r}`),a.push(`Precio unitario: ${e(t.price)}`),a.push(`Subtotal: ${e(t.price*r)}\n`);return a.push(`────────────────`),a.push(`Subtotal: ${e(r)}`),a.push(`Envío: ${t(r)}`),a.push(`TOTAL: ${e(i)}`),a.push(`
+Quisiera coordinar la compra. ¡Gracias!`),a.join(`
+`)}function r(e){let t=n(e);return`https://wa.me/5491100000000?text=${encodeURIComponent(t)}`}function i(e){return`$${e.toLocaleString(`es-AR`)}`}export{r as n,i as t};

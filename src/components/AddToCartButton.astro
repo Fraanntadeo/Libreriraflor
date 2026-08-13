@@ -1,0 +1,104 @@
+---
+import type { Product } from "../data";
+
+interface Props {
+  product: Product;
+  variant?: "card" | "page";
+}
+
+const { product, variant = "card" } = Astro.props;
+
+// Solo pasamos los campos que el carrito necesita
+const cartProduct = {
+  id: product.id,
+  name: product.name,
+  price: product.price,
+  image: product.image,
+  category: product.category,
+};
+
+const isCard = variant === "card";
+---
+
+<button
+  class:list={[
+    "add-to-cart-btn transition-all duration-200",
+    isCard
+      ? "px-3 py-1.5 rounded-full text-[11px] font-semibold"
+      : "flex-1 py-3.5 rounded-full font-semibold text-sm flex items-center justify-center gap-2 min-h-[44px]",
+    product.inStock
+      ? "bg-[#8E6F62] text-[#FFFDFC] hover:bg-[#6F554A]"
+      : "bg-[#E6DDD6] text-[#8C817B] cursor-not-allowed opacity-70",
+  ]}
+  data-product={JSON.stringify(cartProduct)}
+  data-variant={variant}
+  disabled={!product.inStock}
+  aria-label={`Agregar ${product.name} al carrito`}
+>
+  {
+    product.inStock ? (
+      isCard ? (
+        "Agregar"
+      ) : (
+        <>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <path d="M16 10a4 4 0 0 1-8 0" />
+          </svg>
+          Agregar al carrito
+        </>
+      )
+    ) : (
+      "Sin stock"
+    )
+  }
+</button>
+
+<script>
+  import { addToCart } from "../utils/cart";
+  import type { CartProduct } from "../utils/cart";
+
+  document.querySelectorAll<HTMLButtonElement>(".add-to-cart-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (btn.disabled) return;
+
+      const raw = btn.dataset.product;
+      if (!raw) return;
+
+      const product = JSON.parse(raw) as CartProduct;
+      addToCart(product, 1);
+      window.dispatchEvent(new CustomEvent("cart-open"));
+
+      // Feedback visual solo en variante de página de producto
+      if (btn.dataset.variant === "page") {
+        const originalHTML = btn.innerHTML;
+        const originalClasses = ["bg-[#8E6F62]", "hover:bg-[#6F554A]"];
+        btn.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          Agregado al carrito
+        `;
+        btn.classList.remove(...originalClasses);
+        btn.classList.add("bg-[#B8C6B2]");
+        setTimeout(() => {
+          btn.innerHTML = originalHTML;
+          btn.classList.add(...originalClasses);
+          btn.classList.remove("bg-[#B8C6B2]");
+        }, 2000);
+      }
+    });
+  });
+</script>

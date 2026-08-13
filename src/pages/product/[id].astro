@@ -7,6 +7,7 @@ import Stars from "../../components/ui/Stars.astro";
 import Badge from "../../components/ui/Badge.astro";
 import QtySelector from "../../components/ui/QtySelector.astro";
 import Breadcrumb from "../../components/ui/Breadcrumb.astro";
+import AddToCartButton from "../../components/AddToCartButton.astro";
 
 export function getStaticPaths() {
   return PRODUCTS.map((product) => ({
@@ -15,31 +16,42 @@ export function getStaticPaths() {
 }
 
 const { id } = Astro.params;
-const product = PRODUCTS.find(p => p.id === id) as Product | undefined;
+const product = PRODUCTS.find((p) => p.id === id) as Product | undefined;
 
 if (!product) {
-  return Astro.redirect('/404');
+  return Astro.redirect("/404");
 }
 
-const related = PRODUCTS.filter((p) => p.category === product.category && p.id !== product.id).slice(0, 4);
-const wishlist = JSON.parse(Astro.locals?.wishlist || '[]');
+const related = PRODUCTS.filter(
+  (p) => p.category === product.category && p.id !== product.id
+).slice(0, 4);
+
+const discountPct = product.originalPrice
+  ? Math.round((1 - product.price / product.originalPrice) * 100)
+  : 0;
 ---
 
 <Layout title={`${product.name} — Páginas`} current="category">
   <main>
     <div class="max-w-[1200px] mx-auto px-6 py-8 md:py-12">
       <div class="mb-6">
-        <Breadcrumb items={[
-          { label: "Inicio", href: "/" },
-          { label: "Tienda", href: "/category" },
-          { label: product.name }
-        ]} />
+        <Breadcrumb
+          items={[
+            { label: "Inicio", href: "/" },
+            { label: "Tienda", href: "/category" },
+            { label: product.name },
+          ]}
+        />
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16">
-        {/* Image */}
+        <!-- Imagen -->
         <div class="aspect-[4/5] rounded-[24px] overflow-hidden bg-[#F9F5EF] relative">
-          <img src={product.image} alt={product.name} class="w-full h-full object-cover" />
+          <img
+            src={product.image}
+            alt={product.name}
+            class="w-full h-full object-cover"
+          />
           {(product.badge || !product.inStock) && (
             <div class="absolute top-4 left-4">
               <Badge variant={!product.inStock ? "outofstock" : product.badge!} />
@@ -47,72 +59,119 @@ const wishlist = JSON.parse(Astro.locals?.wishlist || '[]');
           )}
         </div>
 
-        {/* Info */}
+        <!-- Info -->
         <div class="flex flex-col">
-          <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#8E6F62] mb-2">{product.category}</p>
-          <h1 style="font-family: 'DM Serif Display', Georgia, serif;" class="text-3xl md:text-4xl text-[#332C29] mb-3 leading-tight">{product.name}</h1>
+          <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#8E6F62] mb-2">
+            {product.category}
+          </p>
+          <h1
+            style="font-family: 'DM Serif Display', Georgia, serif;"
+            class="text-3xl md:text-4xl text-[#332C29] mb-3 leading-tight"
+          >
+            {product.name}
+          </h1>
 
           <div class="flex items-center gap-3 mb-5">
             <Stars value={product.rating} size={14} />
-            <span class="text-sm text-[#8C817B]">{product.rating} · {product.reviews} reseñas</span>
+            <span class="text-sm text-[#8C817B]">
+              {product.rating} · {product.reviews} reseñas
+            </span>
           </div>
 
           <div class="flex items-baseline gap-3 mb-6 pb-6 border-b border-[#E6DDD6]">
             <span class="text-2xl font-bold text-[#332C29]">{fmt(product.price)}</span>
             {product.originalPrice && (
-              <>
-                <span class="text-base text-[#8C817B] line-through">{fmt(product.originalPrice)}</span>
-                <span class="text-sm font-semibold text-[#8E6F62]">
-                  -{Math.round((1 - product.price / product.originalPrice) * 100)}% off
+              <Fragment>
+                <span class="text-base text-[#8C817B] line-through">
+                  {fmt(product.originalPrice)}
                 </span>
-              </>
+                <span class="text-sm font-semibold text-[#8E6F62]">
+                  -{discountPct}% off
+                </span>
+              </Fragment>
             )}
           </div>
 
-          <p class="text-sm text-[#665C57] leading-relaxed mb-5">{product.longDescription || product.description}</p>
+          <p class="text-sm text-[#665C57] leading-relaxed mb-5">
+            {product.longDescription ?? product.description}
+          </p>
 
           <div class="flex flex-wrap gap-2 mb-6">
             {product.tags.map((tag) => (
-              <span key={tag} class="px-3 py-1 bg-[#F9F5EF] border border-[#E6DDD6] rounded-full text-xs text-[#665C57]">{tag}</span>
+              <span class="px-3 py-1 bg-[#F9F5EF] border border-[#E6DDD6] rounded-full text-xs text-[#665C57]">
+                {tag}
+              </span>
             ))}
           </div>
 
           <div class="mb-5">
-            <p class="text-[10px] font-bold uppercase tracking-[0.15em] text-[#8C817B] mb-2">Cantidad</p>
+            <p class="text-[10px] font-bold uppercase tracking-[0.15em] text-[#8C817B] mb-2">
+              Cantidad
+            </p>
             <QtySelector value={1} min={1} max={10} />
           </div>
 
           <div class="flex gap-3 mb-6">
+            <!-- AddToCartButton para la página de producto -->
+            <!-- La cantidad se lee desde el QtySelector en el script -->
             <button
-              id="add-to-cart-btn"
+              id="product-add-to-cart"
               disabled={!product.inStock}
-              class={`flex-1 py-3.5 rounded-full font-semibold text-sm transition-all duration-200 flex items-center justify-center gap-2 min-h-[44px] ${
-                !product.inStock ? "bg-[#E6DDD6] text-[#8C817B] cursor-not-allowed" : "bg-[#8E6F62] text-[#FFFDFC] hover:bg-[#6F554A]"
-              }`}
-              data-product-id={product.id}
-              data-in-stock={product.inStock}
+              class:list={[
+                "flex-1 py-3.5 rounded-full font-semibold text-sm transition-all duration-200 flex items-center justify-center gap-2 min-h-[44px]",
+                product.inStock
+                  ? "bg-[#8E6F62] text-[#FFFDFC] hover:bg-[#6F554A]"
+                  : "bg-[#E6DDD6] text-[#8C817B] cursor-not-allowed",
+              ]}
+              data-product={JSON.stringify({
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                image: product.image,
+                category: product.category,
+              })}
             >
-              {product.inStock ? "Agregar al carrito" : "Sin stock"}
+              {product.inStock ? (
+                <Fragment>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                    <line x1="3" y1="6" x2="21" y2="6" />
+                    <path d="M16 10a4 4 0 0 1-8 0" />
+                  </svg>
+                  Agregar al carrito
+                </Fragment>
+              ) : (
+                "Sin stock"
+              )}
             </button>
+
             <button
-              id="wishlist-btn"
-              class={`w-12 h-12 rounded-full border-2 flex items-center justify-center transition-colors duration-200 ${
-                wishlist.includes(product.id) ? "border-[#E8C8C8] bg-[#E8C8C8]/20" : "border-[#E6DDD6] hover:border-[#E8C8C8]"
-              }`}
-              data-wishlist={wishlist.includes(product.id)}
+              id="product-wishlist-btn"
+              class="w-12 h-12 rounded-full border-2 border-[#E6DDD6] hover:border-[#E8C8C8] flex items-center justify-center transition-colors duration-200"
               data-product-id={product.id}
+              aria-label="Agregar a favoritos"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="17"
                 height="17"
                 viewBox="0 0 24 24"
-                fill={wishlist.includes(product.id) ? "#E8C8C8" : "none"}
-                stroke={wishlist.includes(product.id) ? "#E8C8C8" : "#8C817B"}
+                fill="none"
+                stroke="#8C817B"
                 stroke-width="2"
                 stroke-linecap="round"
                 stroke-linejoin="round"
-                class="wishlist-icon"
+                id="product-wishlist-icon"
               >
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
               </svg>
@@ -125,11 +184,37 @@ const wishlist = JSON.parse(Astro.locals?.wishlist || '[]');
               { icon: "refresh", text: "Cambios y devoluciones en 30 días" },
               { icon: "shield", text: "Pagos seguros con Mercado Pago" },
             ].map((item) => (
-              <div key={item.text} class="flex items-center gap-2.5 text-sm text-[#665C57]">
-                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8E6F62" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0">
-                  {item.icon === "truck" && <><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></>}
-                  {item.icon === "refresh" && <><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></>}
-                  {item.icon === "shield" && <><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></>}
+              <div class="flex items-center gap-2.5 text-sm text-[#665C57]">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="15"
+                  height="15"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#8E6F62"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="flex-shrink-0"
+                >
+                  {item.icon === "truck" && (
+                    <Fragment>
+                      <rect x="1" y="3" width="15" height="13"></rect>
+                      <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                      <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                      <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                    </Fragment>
+                  )}
+                  {item.icon === "refresh" && (
+                    <Fragment>
+                      <polyline points="23 4 23 10 17 10"></polyline>
+                      <polyline points="1 20 1 14 7 14"></polyline>
+                      <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                    </Fragment>
+                  )}
+                  {item.icon === "shield" && (
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  )}
                 </svg>
                 {item.text}
               </div>
@@ -138,26 +223,42 @@ const wishlist = JSON.parse(Astro.locals?.wishlist || '[]');
         </div>
       </div>
 
-      {/* Related */}
+      <!-- Productos relacionados -->
       {related.length > 0 && (
         <section class="mt-16 md:mt-20">
           <div class="mb-8">
             <SLabel>También te puede gustar</SLabel>
-            <h2 style="font-family: 'DM Serif Display', Georgia, serif;" class="text-2xl md:text-3xl text-[#332C29]">Productos relacionados</h2>
+            <h2
+              style="font-family: 'DM Serif Display', Georgia, serif;"
+              class="text-2xl md:text-3xl text-[#332C29]"
+            >
+              Productos relacionados
+            </h2>
           </div>
           <div class="grid grid-cols-2 lg:grid-cols-4 gap-5">
             {related.map((p) => (
-              <div key={p.id} class="group relative flex flex-col bg-[#FFFDFC] rounded-[16px] overflow-hidden border border-[#E6DDD6] cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(142,111,98,0.10)]">
+              <div class="group relative flex flex-col bg-[#FFFDFC] rounded-[16px] overflow-hidden border border-[#E6DDD6] cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(142,111,98,0.10)]">
                 <a href={`/product/${p.id}`} class="block">
                   <div class="relative aspect-[4/5] bg-[#F9F5EF] overflow-hidden">
-                    <img src={p.image} alt={p.name} class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
+                    <img
+                      src={p.image}
+                      alt={p.name}
+                      class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                      loading="lazy"
+                    />
                   </div>
                   <div class="p-4 flex flex-col flex-1">
-                    <p class="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#8C817B] mb-1">{p.category}</p>
-                    <h3 class="text-sm font-semibold text-[#332C29] leading-snug mb-1.5">{p.name}</h3>
+                    <p class="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#8C817B] mb-1">
+                      {p.category}
+                    </p>
+                    <h3 class="text-sm font-semibold text-[#332C29] leading-snug mb-1.5">
+                      {p.name}
+                    </h3>
                     <div class="flex items-baseline gap-1.5 mt-auto">
                       <span class="font-semibold text-[#332C29] text-sm">{fmt(p.price)}</span>
-                      {p.originalPrice && <span class="text-xs text-[#8C817B] line-through">{fmt(p.originalPrice)}</span>}
+                      {p.originalPrice && (
+                        <span class="text-xs text-[#8C817B] line-through">{fmt(p.originalPrice)}</span>
+                      )}
                     </div>
                   </div>
                 </a>
@@ -170,67 +271,82 @@ const wishlist = JSON.parse(Astro.locals?.wishlist || '[]');
   </main>
 </Layout>
 
-<script define:vars={{ product, fmt }}>
-  // Wishlist functionality
-  const wishlistBtn = document.getElementById('wishlist-btn');
-  const wishlistIcon = wishlistBtn.querySelector('.wishlist-icon');
-  
-  wishlistBtn.addEventListener('click', () => {
-    const productId = wishlistBtn.dataset.productId;
-    const isInWishlist = wishlistBtn.dataset.wishlist === 'true';
-    
-    const newState = !isInWishlist;
-    wishlistBtn.dataset.wishlist = newState;
-    
-    wishlistIcon.setAttribute('fill', newState ? '#E8C8C8' : 'none');
-    wishlistIcon.setAttribute('stroke', newState ? '#E8C8C8' : '#8C817B');
-    
-    if (newState) {
-      wishlistBtn.classList.add('border-[#E8C8C8]', 'bg-[#E8C8C8]/20');
-      wishlistBtn.classList.remove('border-[#E6DDD6]');
-    } else {
-      wishlistBtn.classList.remove('border-[#E8C8C8]', 'bg-[#E8C8C8]/20');
-      wishlistBtn.classList.add('border-[#E6DDD6]');
-    }
-    
-    let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
-    if (newState) {
-      wishlist.push(productId);
-    } else {
-      wishlist = wishlist.filter((id: string) => id !== productId);
-    }
-    localStorage.setItem('wishlist', JSON.stringify(wishlist));
-  });
-  
-  // Add to cart functionality
-  const addToCartBtn = document.getElementById('add-to-cart-btn');
-  const qtySelector = document.querySelector('[data-qty-selector]');
-  
-  addToCartBtn.addEventListener('click', () => {
-    const inStock = addToCartBtn.dataset.inStock === 'true';
-    if (!inStock) return;
-    
-    const quantity = parseInt(qtySelector?.dataset.value || '1');
-    
-    for (let i = 0; i < quantity; i++) {
-      window.dispatchEvent(new CustomEvent('add-to-cart', { detail: product.id }));
-    }
-    
-    // Show added state
-    const originalText = addToCartBtn.textContent;
-    addToCartBtn.innerHTML = `
+<script>
+  import { addToCart } from "../../utils/cart";
+  import type { CartProduct } from "../../utils/cart";
+
+  // ─── Agregar al carrito (con cantidad del QtySelector) ────────────────────
+
+  const addBtn = document.getElementById("product-add-to-cart") as HTMLButtonElement | null;
+  const qtySelector = document.querySelector<HTMLElement>("[data-qty-selector]");
+
+  addBtn?.addEventListener("click", () => {
+    if (addBtn.disabled) return;
+
+    const raw = addBtn.dataset.product;
+    if (!raw) return;
+
+    const product = JSON.parse(raw) as CartProduct;
+    const quantity = parseInt(qtySelector?.dataset.value ?? "1", 10);
+
+    addToCart(product, quantity);
+    window.dispatchEvent(new CustomEvent("cart-open"));
+
+    // Feedback visual
+    const originalHTML = addBtn.innerHTML;
+    addBtn.innerHTML = `
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <polyline points="20 6 9 17 4 12"></polyline>
       </svg>
       Agregado al carrito
     `;
-    addToCartBtn.classList.remove('bg-[#8E6F62]', 'hover:bg-[#6F554A]');
-    addToCartBtn.classList.add('bg-[#B8C6B2]');
-    
+    addBtn.classList.remove("bg-[#8E6F62]", "hover:bg-[#6F554A]");
+    addBtn.classList.add("bg-[#B8C6B2]");
+
     setTimeout(() => {
-      addToCartBtn.textContent = originalText;
-      addToCartBtn.classList.add('bg-[#8E6F62]', 'hover:bg-[#6F554A]');
-      addToCartBtn.classList.remove('bg-[#B8C6B2]');
+      addBtn.innerHTML = originalHTML;
+      addBtn.classList.add("bg-[#8E6F62]", "hover:bg-[#6F554A]");
+      addBtn.classList.remove("bg-[#B8C6B2]");
     }, 2000);
   });
+
+  // ─── Wishlist ─────────────────────────────────────────────────────────────
+
+  const wishlistBtn = document.getElementById("product-wishlist-btn") as HTMLButtonElement | null;
+  const wishlistIcon = document.getElementById("product-wishlist-icon");
+
+  if (wishlistBtn && wishlistIcon) {
+    const productId = wishlistBtn.dataset.productId ?? "";
+
+    // Estado inicial desde localStorage
+    const wishlist: string[] = JSON.parse(localStorage.getItem("wishlist") ?? "[]");
+    const initialState = wishlist.includes(productId);
+    applyWishlistState(initialState);
+
+    wishlistBtn.addEventListener("click", () => {
+      const isActive = wishlistBtn.dataset.active === "true";
+      const newState = !isActive;
+
+      applyWishlistState(newState);
+
+      const current: string[] = JSON.parse(localStorage.getItem("wishlist") ?? "[]");
+      const updated = newState
+        ? [...current, productId]
+        : current.filter((id) => id !== productId);
+      localStorage.setItem("wishlist", JSON.stringify(updated));
+    });
+
+    function applyWishlistState(active: boolean) {
+      wishlistBtn!.dataset.active = String(active);
+      wishlistIcon!.setAttribute("fill", active ? "#E8C8C8" : "none");
+      wishlistIcon!.setAttribute("stroke", active ? "#E8C8C8" : "#8C817B");
+      if (active) {
+        wishlistBtn!.classList.add("border-[#E8C8C8]", "bg-[#E8C8C8]/20");
+        wishlistBtn!.classList.remove("border-[#E6DDD6]");
+      } else {
+        wishlistBtn!.classList.remove("border-[#E8C8C8]", "bg-[#E8C8C8]/20");
+        wishlistBtn!.classList.add("border-[#E6DDD6]");
+      }
+    }
+  }
 </script>

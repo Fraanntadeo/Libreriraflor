@@ -2,6 +2,7 @@
 import { fmt } from "../utils";
 import Stars from "./ui/Stars.astro";
 import Badge from "./ui/Badge.astro";
+import AddToCartButton from "./AddToCartButton.astro";
 import type { Product } from "../data";
 
 interface Props {
@@ -16,27 +17,27 @@ const { product, inWishlist = false } = Astro.props;
   class="group relative flex flex-col bg-[#FFFDFC] rounded-[16px] overflow-hidden border border-[#E6DDD6] cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(142,111,98,0.10)]"
   data-product-id={product.id}
 >
-  {/* Image */}
+  <!-- Imagen -->
   <div class="relative aspect-[4/5] bg-[#F9F5EF] overflow-hidden">
     <a href={`/product/${product.id}`}>
       <img
         src={product.image}
         alt={product.name}
         class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+        loading="lazy"
       />
     </a>
     {(product.badge || !product.inStock) && (
       <div class="absolute top-3 left-3">
-        <Badge
-          variant={!product.inStock ? "outofstock" : product.badge!}
-        />
+        <Badge variant={!product.inStock ? "outofstock" : product.badge!} />
       </div>
     )}
     <button
-      class={`absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 flex items-center justify-center transition-all duration-200 shadow-sm wishlist-btn ${
-        inWishlist ? "opacity-100" : "opacity-0 group-hover:opacity-100"
-      }`}
-      data-wishlist={inWishlist}
+      class:list={[
+        "wishlist-btn absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 flex items-center justify-center transition-all duration-200 shadow-sm",
+        inWishlist ? "opacity-100" : "opacity-0 group-hover:opacity-100",
+      ]}
+      data-wishlist={String(inWishlist)}
       data-product-id={product.id}
       aria-label="Toggle wishlist"
     >
@@ -57,7 +58,7 @@ const { product, inWishlist = false } = Astro.props;
     </button>
   </div>
 
-  {/* Body */}
+  <!-- Cuerpo -->
   <div class="p-4 flex flex-col flex-1">
     <p class="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#8C817B] mb-1">
       {product.category}
@@ -73,75 +74,42 @@ const { product, inWishlist = false } = Astro.props;
     <div class="mt-auto">
       <div class="flex items-center gap-1.5 mb-3">
         <Stars value={product.rating} size={11} />
-        <span class="text-[11px] text-[#8C817B]">
-          ({product.reviews})
-        </span>
+        <span class="text-[11px] text-[#8C817B]">({product.reviews})</span>
       </div>
       <div class="flex items-center justify-between">
         <div class="flex items-baseline gap-1.5">
-          <span class="font-semibold text-[#332C29] text-sm">
-            {fmt(product.price)}
-          </span>
+          <span class="font-semibold text-[#332C29] text-sm">{fmt(product.price)}</span>
           {product.originalPrice && (
             <span class="text-xs text-[#8C817B] line-through">
               {fmt(product.originalPrice)}
             </span>
           )}
         </div>
-        <button
-          disabled={!product.inStock}
-          class={`px-3 py-1.5 rounded-full text-[11px] font-semibold transition-all duration-200 add-to-cart-btn ${
-            product.inStock
-              ? "bg-[#8E6F62] text-[#FFFDFC] hover:bg-[#6F554A]"
-              : "bg-[#E6DDD6] text-[#8C817B] cursor-not-allowed"
-          }`}
-          data-product-id={product.id}
-          data-in-stock={product.inStock}
-        >
-          {product.inStock ? "Agregar" : "Sin stock"}
-        </button>
+        <AddToCartButton product={product} variant="card" />
       </div>
     </div>
   </div>
 </article>
 
 <script>
-  document.querySelectorAll('.wishlist-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
+  // Wishlist — lógica local, independiente del carrito
+  document.querySelectorAll<HTMLButtonElement>(".wishlist-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
       e.stopPropagation();
-      const productId = btn.dataset.productId;
-      const icon = btn.querySelector('.wishlist-icon');
-      const isInWishlist = btn.dataset.wishlist === 'true';
-      
-      // Toggle wishlist state
+      const productId = btn.dataset.productId ?? "";
+      const icon = btn.querySelector<SVGElement>(".wishlist-icon");
+      const isInWishlist = btn.dataset.wishlist === "true";
       const newState = !isInWishlist;
-      btn.dataset.wishlist = newState;
-      
-      // Update icon
-      icon.setAttribute('fill', newState ? '#E8C8C8' : 'none');
-      icon.setAttribute('stroke', newState ? '#E8C8C8' : '#8C817B');
-      
-      // Update localStorage
-      let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
-      if (newState) {
-        wishlist.push(productId);
-      } else {
-        wishlist = wishlist.filter((id: string) => id !== productId);
-      }
-      localStorage.setItem('wishlist', JSON.stringify(wishlist));
-    });
-  });
-  
-  document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const productId = btn.dataset.productId;
-      const inStock = btn.dataset.inStock === 'true';
-      
-      if (!inStock) return;
-      
-      // Get product data from window or fetch it
-      window.dispatchEvent(new CustomEvent('add-to-cart', { detail: productId }));
+
+      btn.dataset.wishlist = String(newState);
+      icon?.setAttribute("fill", newState ? "#E8C8C8" : "none");
+      icon?.setAttribute("stroke", newState ? "#E8C8C8" : "#8C817B");
+
+      const wishlist: string[] = JSON.parse(localStorage.getItem("wishlist") ?? "[]");
+      const updated = newState
+        ? [...wishlist, productId]
+        : wishlist.filter((id) => id !== productId);
+      localStorage.setItem("wishlist", JSON.stringify(updated));
     });
   });
 </script>
