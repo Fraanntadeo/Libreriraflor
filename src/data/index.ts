@@ -22,13 +22,22 @@ export interface Product {
   tags: string[];
 }
 
+export interface Testimonial {
+  id: string;
+  name: string;
+  product: string;
+  text: string;
+  initials: string;
+  rating: number;
+}
+
 export const CATEGORIES: Category[] = [
   {
     id: "cuadernos",
     name: "Cuadernos",
     description: "Para escribir tus mejores ideas",
     image: "https://images.unsplash.com/photo-1531346878377-a5be20888e57?w=480&h=600&fit=crop&auto=format",
-    count: 14,
+    count: 12,
   },
   {
     id: "agendas",
@@ -430,5 +439,5 @@ export const PRODUCTS: Product[] = [
   },
 ];
 
-export const TESTIMONIALS = [];
+export const TESTIMONIALS: Testimonial[] = [];
 export const INSTAGRAM_IMAGES: string[] = [];

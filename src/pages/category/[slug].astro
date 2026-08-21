@@ -1,0 +1,70 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { PRODUCTS, CATEGORIES } from "../../data";
+import ProductCard from "../../components/ProductCard.astro";
+import SLabel from "../../components/ui/SLabel.astro";
+import Breadcrumb from "../../components/ui/Breadcrumb.astro";
+
+export function getStaticPaths() {
+  return CATEGORIES.map((category) => ({
+    params: { slug: category.id },
+    props: { category },
+  }));
+}
+
+const { slug } = Astro.params;
+const category = CATEGORIES.find((c) => c.id === slug);
+
+if (!category) {
+  return Astro.redirect("/404");
+}
+
+const categoryProducts = PRODUCTS.filter((p) => p.category === slug);
+---
+
+<Layout title={`${category.name} — Páginas`} current="category">
+  <main>
+    <div class="max-w-[1200px] mx-auto px-6 py-8 md:py-12">
+      <div class="mb-6">
+        <Breadcrumb
+          items={[
+            { label: "Inicio", href: "/" },
+            { label: "Tienda", href: "/category" },
+            { label: category.name },
+          ]}
+        />
+      </div>
+
+      <div class="mb-8">
+        <SLabel>Categoría</SLabel>
+        <h1
+          style="font-family: 'DM Serif Display', Georgia, serif;"
+          class="text-3xl md:text-4xl text-[#332C29]"
+        >
+          {category.name}
+        </h1>
+        <p class="text-[#665C57] mt-2">{category.description}</p>
+      </div>
+
+      {categoryProducts.length > 0 ? (
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {categoryProducts.map((product) => (
+            <ProductCard product={product} />
+          ))}
+        </div>
+      ) : (
+        <div class="text-center py-20">
+          <p class="text-[#665C57]">
+            No hay productos en esta categoría por el momento.
+          </p>
+          <a
+            href="/category"
+            class="inline-block mt-4 px-6 py-3 bg-[#8E6F62] text-[#FFFDFC] rounded-full font-semibold text-sm hover:bg-[#6F554A] transition-colors"
+          >
+            Ver todas las categorías
+          </a>
+        </div>
+      )}
+    </div>
+  </main>
+</Layout>

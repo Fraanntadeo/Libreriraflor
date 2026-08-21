@@ -1,0 +1,49 @@
+---
+import Layout from "../layouts/Layout.astro";
+import SLabel from "../components/ui/SLabel.astro";
+---
+
+<Layout title="Blog — Páginas" current="blog">
+  <main class="max-w-[1200px] mx-auto px-6 py-16 md:py-20">
+    <div class="text-center mb-12">
+      <SLabel>Blog</SLabel>
+      <h1
+        style="font-family: 'DM Serif Display', Georgia, serif;"
+        class="text-3xl md:text-4xl text-[#332C29] mb-4"
+      >
+        Tips de escritura y creatividad
+      </h1>
+      <p class="text-[#665C57] max-w-md mx-auto">
+        Ideas, inspiración y consejos para potenciar tu rutina de escritura.
+      </p>
+    </div>
+
+    <div class="text-center py-20">
+      <div class="w-20 h-20 rounded-full bg-[#F9F5EF] flex items-center justify-center mx-auto mb-6">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="32"
+          height="32"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#8C817B"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M12 20h9"></path>
+          <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+        </svg>
+      </div>
+      <h2
+        style="font-family: 'DM Serif Display', Georgia, serif;"
+        class="text-2xl text-[#332C29] mb-3"
+      >
+        Próximamente
+      </h2>
+      <p class="text-[#665C57] max-w-sm mx-auto">
+        Estamos preparando contenido interesante para compartir. Volvé pronto.
+      </p>
+    </div>
+  </main>
+</Layout>
