@@ -73,139 +73,306 @@ export const CATEGORIES: Category[] = [
   },
 ];
 
+// ─── PRECIOS ──────────────────────────────────────────────────────────────────
+// Todos los precios están en 0 como placeholder.
+// Reemplazá cada price: 0 con el precio real en pesos argentinos.
+// ─────────────────────────────────────────────────────────────────────────────
+
 export const PRODUCTS: Product[] = [
+  // ── AGENDAS ────────────────────────────────────────────────────────────────
   {
     id: "1",
-    name: "Cuaderno Kraft Natural",
+    name: "Agenda A5 2027 Perpetua — 2 días por hoja",
     description:
-      "Tapa dura de papel kraft, 200 páginas rayadas, encuadernación cosida.",
+      "Sin fecha, 2 días por hoja. Disponible en sistema de discos (tapa blanda) o doble alambre (tapa dura).",
     longDescription:
-      "Nuestro cuaderno más querido. Fabricado con tapa de papel kraft reciclado 450g, encuadernado a mano con hilo encerado. Las 200 páginas interiores son de papel offset 90g con rayado suave que no sangra. Perfecto para escritura diaria, journaling o bocetos ligeros.",
-    price: 1850,
+      "200 hojas de 80 gramos. Incluye portada, hoja de datos, calendario, hoja de contactos, hoja de claves, hoja de gastos, hoja de fechas importantes. Interior: planner mensual y hojas de 2 días por página.",
+    price: 0, // ← COMPLETAR
+    image:
+      "https://images.unsplash.com/photo-1579008840658-715d866b72af?w=600&h=750&fit=crop&auto=format",
+    badge: "new",
+    category: "agendas",
+    inStock: true,
+    rating: 5.0,
+    reviews: 0,
+    tags: ["A5", "2027", "perpetua", "2 días", "discos", "doble alambre"],
+  },
+  {
+    id: "2",
+    name: "Agenda A5 2027 Semana a la Vista — fechada",
+    description:
+      "Fechada, semana a la vista. Disponible en sistema de discos (tapa blanda) o doble alambre (tapa dura).",
+    longDescription:
+      "160 hojas de 80 gramos. Incluye portada, hoja de datos, calendario, hoja de contactos, hoja de claves, hoja de gastos, hoja de fechas importantes. Interior: planner mensual y semana a la vista.",
+    price: 0, // ← COMPLETAR
+    image:
+      "https://images.unsplash.com/photo-1620287920810-3f5b9746380c?w=600&h=750&fit=crop&auto=format",
+    badge: "new",
+    category: "agendas",
+    inStock: true,
+    rating: 5.0,
+    reviews: 0,
+    tags: ["A5", "2027", "fechada", "semana a la vista", "discos", "doble alambre"],
+  },
+  {
+    id: "3",
+    name: "Agenda A5 Diaria — 1 día por hoja",
+    description:
+      "1 día por hoja. Disponible en sistema de discos (tapa blanda) o doble alambre (tapa dura).",
+    longDescription:
+      "410 hojas de 80 gramos. Incluye portada, hoja de datos, calendario, hoja de contactos, hoja de claves, hoja de gastos, hoja de fechas importantes. Interior: planner mensual y hojas de 1 día por página.",
+    price: 0, // ← COMPLETAR
+    image:
+      "https://images.unsplash.com/photo-1531346878377-a5be20888e57?w=600&h=750&fit=crop&auto=format",
+    badge: "new",
+    category: "agendas",
+    inStock: true,
+    rating: 5.0,
+    reviews: 0,
+    tags: ["A5", "diaria", "1 día", "discos", "doble alambre"],
+  },
+
+  // ── CUADERNOS ──────────────────────────────────────────────────────────────
+  {
+    id: "4",
+    name: 'Cuaderno A5 "Flores Postales" x 100 hojas',
+    description:
+      "Con frases. Hojas a elección: rayadas, cuadriculadas, de puntos o lisas. Sistema de discos o doble alambre.",
+    longDescription:
+      "Cuaderno A5 con diseño Flores Postales y frases en el interior. 100 hojas. Podés elegir el tipo de hojas: rayadas, cuadriculadas, punteadas o lisas. Disponible en sistema de discos o doble alambre.",
+    price: 0, // ← COMPLETAR
+    image:
+      "https://images.unsplash.com/photo-1526280524276-51b1c8a46321?w=600&h=750&fit=crop&auto=format",
+    badge: "new",
+    category: "cuadernos",
+    inStock: true,
+    rating: 5.0,
+    reviews: 0,
+    tags: ["A5", "flores postales", "100 hojas", "discos", "doble alambre"],
+  },
+  {
+    id: "5",
+    name: "Cuaderno Universitario A4 — Sistema de disco x 100 hojas",
+    description:
+      "Con portada, hoja de datos, calendario, hoja de fechas importantes, hoja de temarios y separadores.",
+    longDescription:
+      "Cuaderno universitario A4 en sistema de disco. 100 hojas. Incluye portada, hoja de datos, hoja con calendario, hoja de fechas importantes, hoja con temarios. Tipo de hojas a elección: rayadas, cuadriculadas o punteadas. Viene con 2 separadores de materias.",
+    price: 0, // ← COMPLETAR
+    image:
+      "https://images.unsplash.com/photo-1603188389888-7b80bd0a7e3e?w=600&h=750&fit=crop&auto=format",
+    badge: "new",
+    category: "cuadernos",
+    inStock: true,
+    rating: 5.0,
+    reviews: 0,
+    tags: ["A4", "universitario", "disco", "100 hojas"],
+  },
+  {
+    id: "6",
+    name: "Cuaderno Sara Kay A5 x 100 hojas + llaverito y stickers",
+    description:
+      "Con llaverito y stickers incluidos. Sistema de doble alambre.",
+    longDescription:
+      "Cuaderno A5 diseño Sara Kay con 100 hojas. Incluye hoja de datos, calendario y hoja de fechas importantes. Viene con llaverito y stickers de regalo. Sistema de doble alambre.",
+    price: 0, // ← COMPLETAR
+    image:
+      "https://images.unsplash.com/photo-1592271019141-b5c71a9cfd71?w=600&h=750&fit=crop&auto=format",
+    badge: "new",
+    category: "cuadernos",
+    inStock: true,
+    rating: 5.0,
+    reviews: 0,
+    tags: ["A5", "Sara Kay", "llaverito", "stickers", "doble alambre"],
+  },
+  {
+    id: "7",
+    name: "Cuaderno Abrochado Tapa Blanda x 40 hojas — Personajes",
+    description:
+      "Tapa blanda con personajes. Hojas a elección: rayadas, cuadriculadas, punteadas o blancas.",
+    longDescription:
+      "Cuaderno abrochado con tapa blanda ilustrada con personajes. 40 hojas. Podés elegir el tipo de hojas: rayadas, cuadriculadas, punteadas o blancas.",
+    price: 0, // ← COMPLETAR
+    image:
+      "https://images.unsplash.com/photo-1620811449164-f12a0f2ac40f?w=600&h=750&fit=crop&auto=format",
+    badge: "new",
+    category: "cuadernos",
+    inStock: true,
+    rating: 5.0,
+    reviews: 0,
+    tags: ["abrochado", "tapa blanda", "40 hojas", "personajes"],
+  },
+  {
+    id: "8",
+    name: "Cuaderno Control Salud + Planner Semanal Perpetuo A5",
+    description:
+      "Con control de diabetes y presión arterial. Sistema de disco o doble alambre.",
+    longDescription:
+      "Cuaderno A5 especial para el control de la salud. Incluye portada, hoja de datos, calendario, hoja de contactos, planner semanal de planificación, semana a la vista, hoja de control de diabetes y control de presión arterial. Disponible en sistema de disco o doble alambre.",
+    price: 0, // ← COMPLETAR
+    image:
+      "https://images.unsplash.com/photo-1775129667571-7fa3f51c05e3?w=600&h=750&fit=crop&auto=format",
+    badge: "new",
+    category: "cuadernos",
+    inStock: true,
+    rating: 5.0,
+    reviews: 0,
+    tags: ["salud", "planner", "perpetuo", "A5", "disco", "doble alambre"],
+  },
+  {
+    id: "9",
+    name: "Cuaderno Pediátrico A5 — Tapa Dura Doble Alambre",
+    description:
+      "Cuaderno pediátrico A5 con tapa dura y sistema de doble alambre.",
+    longDescription:
+      "Cuaderno pediátrico A5 con tapa dura y sistema de doble alambre, pensado para el seguimiento del crecimiento y salud del bebé.",
+    price: 0, // ← COMPLETAR
     image:
       "https://images.unsplash.com/photo-1531346878377-a5be20888e57?w=600&h=750&fit=crop&auto=format",
     badge: "new",
     category: "cuadernos",
     inStock: true,
-    rating: 4.8,
-    reviews: 124,
-    tags: ["kraft", "rayado", "tapa dura"],
+    rating: 5.0,
+    reviews: 0,
+    tags: ["pediátrico", "A5", "tapa dura", "doble alambre"],
   },
   {
-    id: "2",
-    name: "Agenda 2025 Nube",
+    id: "10",
+    name: "Cuaderno de Anotaciones Deportes — Tapa Dura + tabla borrable",
     description:
-      "Agenda anual con vistas mensual y semanal, papel 80g, marcador de página.",
+      "Con tabla de jugada borrable. Sistema de doble alambre. Ideal para entrenadores y deportistas.",
     longDescription:
-      "Agenda completa para 2025 con calendario anual, páginas mensuales y bloques semanales con espacio para prioridades, notas y tracker de hábitos. Papel satinado 80g, marcador de cinta bordó y bolsillo interior.",
-    price: 2400,
+      "Cuaderno de anotaciones deportivas con tapa dura y sistema de doble alambre. Incluye tabla de jugada borrable, hoja de datos, calendario, hoja de fechas importantes, hoja de ficha de datos personales, planificador semanal, hoja de planificación de partidos y hojas de notas rayadas.",
+    price: 0, // ← COMPLETAR
     image:
       "https://images.unsplash.com/photo-1579008840658-715d866b72af?w=600&h=750&fit=crop&auto=format",
-    badge: "bestseller",
-    category: "agendas",
+    badge: "new",
+    category: "cuadernos",
     inStock: true,
     rating: 5.0,
-    reviews: 89,
-    tags: ["agenda 2025", "semanal", "tapa dura"],
+    reviews: 0,
+    tags: ["deportes", "tapa dura", "doble alambre", "tabla borrable"],
   },
   {
-    id: "3",
-    name: "Planner Semanal Botánico",
+    id: "11",
+    name: "Cuaderno de Recetas A5 o A4 — Tapa Dura Doble Alambre",
     description:
-      "Diseño ilustrado con motivos botánicos, bloques semanales y espacio de notas.",
+      "Con tabla de equivalencias, hojas para recetas y hojas de notas.",
     longDescription:
-      "Un planner undated con delicadas ilustraciones botánicas en cada apertura. Vista semanal extendida, espacio para metas mensuales, tracker de hábitos y páginas de notas libres. Tapa en cartón plastificado mate.",
-    price: 1650,
-    originalPrice: 2100,
-    image:
-      "https://images.unsplash.com/photo-1526280524276-51b1c8a46321?w=600&h=750&fit=crop&auto=format",
-    badge: "sale",
-    category: "planners",
-    inStock: true,
-    rating: 4.6,
-    reviews: 67,
-    tags: ["botánico", "semanal", "undated"],
-  },
-  {
-    id: "4",
-    name: "Cuadernillo Acuarela A5",
-    description:
-      "Cuadernillo A5 de papel especial para acuarela, 30 hojas, tapa kraft.",
-    longDescription:
-      "Papel cold press 200g especialmente seleccionado para técnicas de acuarela y aguada. 30 hojas doble cara en formato A5, ideal para bocetos y pinturas compactas. La tapa de papel kraft protege tu trabajo.",
-    price: 980,
+      "Cuaderno de recetas disponible en tamaño A5 o A4. Tapa dura con sistema de doble alambre. Incluye portada, hoja con tabla de equivalencias, hojas para recetas y hojas de notas.",
+    price: 0, // ← COMPLETAR
     image:
       "https://images.unsplash.com/photo-1603188389888-7b80bd0a7e3e?w=600&h=750&fit=crop&auto=format",
     badge: "new",
-    category: "cuadernillos",
-    inStock: true,
-    rating: 4.9,
-    reviews: 43,
-    tags: ["acuarela", "A5", "cold press"],
-  },
-  {
-    id: "5",
-    name: "Kit Stickers Primavera",
-    description: "Set de 60 stickers ilustrados a mano. Temática floral y botánica.",
-    longDescription:
-      "60 stickers diseñados e ilustrados a mano en nuestro estudio. Papel adhesivo satinado de alta calidad, resistente al agua y a los marcadores. Incluye flores, hojas, ramas y elementos botánicos de temporada.",
-    price: 650,
-    image:
-      "https://images.unsplash.com/photo-1592271019141-b5c71a9cfd71?w=600&h=750&fit=crop&auto=format",
-    category: "stickers",
-    inStock: true,
-    rating: 4.7,
-    reviews: 156,
-    tags: ["floral", "botánico", "60 unidades"],
-  },
-  {
-    id: "6",
-    name: "Cuaderno Lino Salvia",
-    description: "Tapa de lino natural color verde salvia, 160 páginas punteadas.",
-    longDescription:
-      "Tapa de lino natural cosido a mano en tono verde salvia. 160 páginas punteadas de papel Clairefontaine 100g. Elástico de cierre, bolsillo trasero y marcador de tela. Un objeto que se atesora.",
-    price: 2100,
-    image:
-      "https://images.unsplash.com/photo-1620811449164-f12a0f2ac40f?w=600&h=750&fit=crop&auto=format",
-    badge: "bestseller",
     category: "cuadernos",
     inStock: true,
-    rating: 4.9,
-    reviews: 201,
-    tags: ["lino", "punteado", "tapa tela"],
+    rating: 5.0,
+    reviews: 0,
+    tags: ["recetas", "A5", "A4", "tapa dura", "doble alambre"],
   },
   {
-    id: "7",
-    name: "Agenda Pocket Rosa",
+    id: "12",
+    name: "Midori — 3 cuadernos tapa blanda con elástico",
     description:
-      "Agenda de bolsillo 10×15 cm, tapa suave, 52 semanas con espacio diario.",
+      "Contenedor con sistema de elásticos para 3 cuadernos. Hojas a elección.",
     longDescription:
-      "Agenda compacta que entra en cualquier bolsillo. Tapa de PU suave en rosa pálido, costura decorativa y marcador de tela. 52 semanas con espacio para citas, tareas y notas diarias.",
-    price: 1200,
+      "Midori con contenedor de sistema de elásticos para 3 cuadernos de tapa blanda. Hojas disponibles en rayadas, cuadriculadas, lisas o punteadas. Los 3 cuadernos se pueden combinar entre sí.",
+    price: 0, // ← COMPLETAR
     image:
       "https://images.unsplash.com/photo-1620287920810-3f5b9746380c?w=600&h=750&fit=crop&auto=format",
-    category: "agendas",
-    inStock: false,
-    rating: 4.5,
-    reviews: 38,
-    tags: ["pocket", "suave", "semanal"],
+    badge: "new",
+    category: "cuadernos",
+    inStock: true,
+    rating: 5.0,
+    reviews: 0,
+    tags: ["midori", "tapa blanda", "elástico", "3 cuadernos"],
+  },
+
+  // ── CUADERNILLOS ───────────────────────────────────────────────────────────
+  {
+    id: "13",
+    name: "Cuadernillo Universitario A4 con espiral — Tapa semi blanda",
+    description:
+      "80 hojas a elección: rayadas, cuadriculadas, punteadas o lisas.",
+    longDescription:
+      "Cuadernillo universitario A4 con tapa semi blanda y espiral. 80 hojas a elección: rayadas, cuadriculadas, punteadas o lisas.",
+    price: 0, // ← COMPLETAR
+    image:
+      "https://images.unsplash.com/photo-1526280524276-51b1c8a46321?w=600&h=750&fit=crop&auto=format",
+    badge: "new",
+    category: "cuadernillos",
+    inStock: true,
+    rating: 5.0,
+    reviews: 0,
+    tags: ["universitario", "A4", "espiral", "80 hojas"],
   },
   {
-    id: "8",
-    name: "Planner Mensual Arcilla",
-    description:
-      "Planner undated con vistas mensuales, tracker de hábitos y notas libres.",
+    id: "14",
+    name: "Librito para Colorear A5 — Tapa Dura BOBY GOODS",
+    description: "60 hojas para colorear. Tapa dura.",
     longDescription:
-      "Planner sin fechas para comenzarlo cuando quieras. Color arcilla cálido con detalles en terracota. Incluye 12 vistas mensuales, tracker de hábitos, páginas de reflexión mensual y 20 páginas de notas libres.",
-    price: 1900,
+      "Librito para colorear A5 con tapa dura de la línea BOBY GOODS. 60 hojas para colorear.",
+    price: 0, // ← COMPLETAR
     image:
-      "https://images.unsplash.com/photo-1775129667571-7fa3f51c05e3?w=600&h=750&fit=crop&auto=format",
+      "https://images.unsplash.com/photo-1592271019141-b5c71a9cfd71?w=600&h=750&fit=crop&auto=format",
     badge: "new",
-    category: "planners",
+    category: "cuadernillos",
     inStock: true,
-    rating: 4.8,
-    reviews: 52,
-    tags: ["arcilla", "mensual", "tracker"],
+    rating: 5.0,
+    reviews: 0,
+    tags: ["colorear", "A5", "tapa dura", "BOBY GOODS", "60 hojas"],
+  },
+
+  // ── PAPELERÍA / FICHEROS ───────────────────────────────────────────────────
+  {
+    id: "15",
+    name: "Fichero N3 — 100 hojas 80g con 2 separadores",
+    description:
+      "Hojas a elección: rayadas, cuadriculadas, punteadas o lisas. Incluye 2 separadores.",
+    longDescription:
+      "Fichero número 3 con 100 hojas de 80 gramos. Podés elegir el tipo de hojas: rayadas, cuadriculadas, punteadas o lisas. Incluye 2 separadores.",
+    price: 0, // ← COMPLETAR
+    image:
+      "https://images.unsplash.com/photo-1508344210624-009dde43a167?w=600&h=750&fit=crop&auto=format",
+    badge: "new",
+    category: "papeleria",
+    inStock: true,
+    rating: 5.0,
+    reviews: 0,
+    tags: ["fichero", "N3", "100 hojas", "separadores"],
+  },
+  {
+    id: "16",
+    name: "Repuesto hojas para fichero x 100 hojas",
+    description:
+      "Tipo de hojas a elección: rayadas, cuadriculadas, punteadas o lisas.",
+    longDescription:
+      "Repuesto de 100 hojas para fichero. Elegí el tipo de hojas que necesitás: rayadas, cuadriculadas, punteadas o lisas.",
+    price: 0, // ← COMPLETAR
+    image:
+      "https://images.unsplash.com/photo-1508344210624-009dde43a167?w=600&h=750&fit=crop&auto=format",
+    badge: "new",
+    category: "papeleria",
+    inStock: true,
+    rating: 5.0,
+    reviews: 0,
+    tags: ["repuesto", "fichero", "100 hojas"],
+  },
+  {
+    id: "17",
+    name: "Repuesto hojas para fichero x 50 hojas",
+    description:
+      "Tipo de hojas a elección: rayadas, cuadriculadas, punteadas o lisas.",
+    longDescription:
+      "Repuesto de 50 hojas para fichero. Elegí el tipo de hojas que necesitás: rayadas, cuadriculadas, punteadas o lisas.",
+    price: 0, // ← COMPLETAR
+    image:
+      "https://images.unsplash.com/photo-1508344210624-009dde43a167?w=600&h=750&fit=crop&auto=format",
+    badge: "new",
+    category: "papeleria",
+    inStock: true,
+    rating: 5.0,
+    reviews: 0,
+    tags: ["repuesto", "fichero", "50 hojas"],
   },
 ];
 
